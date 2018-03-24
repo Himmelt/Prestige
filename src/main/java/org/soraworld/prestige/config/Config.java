@@ -2,9 +2,11 @@ package org.soraworld.prestige.config;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.PrestigeData;
 import org.soraworld.prestige.util.ServerUtils;
 
@@ -32,6 +34,7 @@ public class Config {
     private boolean allWorld = false;
     private final HashSet<World> worlds = new HashSet<>();
     private final HashMap<Player, PrestigeData> databases = new HashMap<>();
+    private final HashMap<Integer, Level> levels = new HashMap<>();
 
     public Config(File path, Plugin plugin) {
         this.file = new File(path, "config.yml");
@@ -49,6 +52,7 @@ public class Config {
             config.load(file);
             setLang(config.getString("lang"));
             readWorlds(config.getStringList("worlds"));
+            readLevels(config.getConfigurationSection("levels"));
 
             difficultKillFormula = config.getString("difficultKillFormula");
             difficultDieFormula = config.getString("difficultDieFormula");
@@ -60,6 +64,26 @@ public class Config {
         } catch (Throwable e) {
             e.printStackTrace();
             ServerUtils.console("config file load exception !!!");
+        }
+    }
+
+    public void save() {
+        try {
+            config.set("lang", lang);
+
+            config.set("difficultKillFormula", difficultKillFormula);
+            config.set("difficultDieFormula", difficultDieFormula);
+            config.set("simpleKillFormula", simpleKillFormula);
+            config.set("simpleDieFormula", simpleDieFormula);
+            config.set("easyKillFormula", easyKillFormula);
+            config.set("easyDieFormula", easyDieFormula);
+
+            writeLevels(config.createSection("levels"));
+            config.set("worlds", writeWorlds());
+            config.save(file);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            ServerUtils.console("config file save exception !!!");
         }
     }
 
@@ -91,22 +115,35 @@ public class Config {
         return list;
     }
 
-    public void save() {
-        try {
-            config.set("lang", lang);
+    private void readLevels(ConfigurationSection section) {
+        levels.clear();
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                try {
+                    int lvl = Integer.valueOf(key);
+                    ConfigurationSection sec = section.getConfigurationSection(key);
+                    if (lvl >= 0 && sec != null) {
+                        levels.put(lvl, new Level(sec.getString("name", "Level " + lvl), sec.getInt("score", lvl), sec.getString("prefix", "prefix " + lvl), sec.getString("suffix", "suffix " + lvl)));
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+        if (levels.get(0) == null) {
+            levels.put(0, new Level("Level 0", 0, "prefix 0", "suffix 0"));
+        }
+    }
 
-            config.set("difficultKillFormula", difficultKillFormula);
-            config.set("difficultDieFormula", difficultDieFormula);
-            config.set("simpleKillFormula", simpleKillFormula);
-            config.set("simpleDieFormula", simpleDieFormula);
-            config.set("easyKillFormula", easyKillFormula);
-            config.set("easyDieFormula", easyDieFormula);
-
-            config.set("worlds", writeWorlds());
-            config.save(file);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            ServerUtils.console("config file save exception !!!");
+    private void writeLevels(ConfigurationSection section) {
+        for (int lvl : levels.keySet()) {
+            Level level = levels.get(lvl);
+            ConfigurationSection sec = section.createSection(String.valueOf(lvl));
+            if (sec != null) {
+                sec.set("name", level.getName());
+                sec.set("score", level.getScore());
+                sec.set("prefix", level.getPrefix());
+                sec.set("suffix", level.getSuffix());
+            }
         }
     }
 
@@ -171,6 +208,11 @@ public class Config {
             return data;
         }
         return null;
+    }
+
+    public Level getLevel(int lvl) {
+        if (levels.containsKey(lvl)) return levels.get(lvl);
+        return levels.get(0);
     }
 
 }

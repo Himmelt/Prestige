@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group 'org.soraworld.prestige'
-version '1.7.10-0.0.1'
+version '1.7.10-0.1.1'
 description = 'Prestige Plugin'
 archivesBaseName = "Prestige"
 
@@ -20,4 +20,8 @@ repositories {
 
 dependencies {
     compile 'org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }

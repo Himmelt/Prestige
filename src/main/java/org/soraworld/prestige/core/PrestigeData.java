@@ -2,10 +2,10 @@ package org.soraworld.prestige.core;
 
 import org.bukkit.entity.Player;
 
-public final class PrestigeData {
+public class PrestigeData {
 
     private int score = 0;
-    private Level level = new Level();
+    private int level = 0;
 
     public PrestigeData(Player player) {
 
@@ -19,10 +19,9 @@ public final class PrestigeData {
         this.score += score;
     }
 
-    public Level getLevel() {
+    public int lvl() {
         return level;
     }
-
 
     public int updateLevel() {
         return 0;

@@ -57,13 +57,12 @@ public class EventListener implements Listener {
             // TODO calculate score
             final PrestigeData killerData = config.getPlayerData(killer);
             final PrestigeData deaderData = config.getPlayerData(deader);
-            Level killerLevel = killerData.getLevel();
-            Level deadLevel = deaderData.getLevel();
+            Level killerLevel = config.getLevel(killerData.lvl());
+            Level deadLevel = config.getLevel(deaderData.lvl());
 
             List<String> variables = ListUtils.arrayList("$KillerScore$", "$DeadScore$", "$KillerGradeScore$", "$DeadGradeScore$");
             List<Integer> values = ListUtils.arrayList(killerData.getScore(), deaderData.getScore(), killerLevel.getScore(), deadLevel.getScore());
-            //boolean killerGet = false;
-            //boolean deadGet = false;
+
             MathUtils pool;
             int killerGet1;
             int deadGet1;
@@ -97,7 +96,7 @@ public class EventListener implements Listener {
             if (killerUpdate != 0) {
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     public void run() {
-                        Level level = killerData.getLevel();
+                        Level level = config.getLevel(killerData.lvl());
                         ServerUtils.send(killer, killerUpdate == 1 ? "§e恭喜你，你晋升到了 " + level.getName() : "§c很遗憾，你掉段到了 " + level.getName());
                         killer.playSound(killer.getLocation(), Sound.ANVIL_USE, 10.0F, killer.getLocation().getPitch());
                     }
@@ -106,7 +105,7 @@ public class EventListener implements Listener {
 
             int deadUpdate = deaderData.updateLevel();
             if (deadUpdate != 0) {
-                Level newGrade = deaderData.getLevel();
+                Level newGrade = config.getLevel(deaderData.lvl());
                 ServerUtils.send(deader, deadUpdate == 1 ? "§e恭喜你，你晋升了到了 " + newGrade.getName() : "§c很遗憾，你掉段到了 " + newGrade.getName());
             }
 
