@@ -1,0 +1,7 @@
+name: Prestige
+main: cn.austin.ud.Prestige
+version: 0.7
+commands:
+  prestige:
+    aliases: [pre,pres]
+    description: /prestige help
