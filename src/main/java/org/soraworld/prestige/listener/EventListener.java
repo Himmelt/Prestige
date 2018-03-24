@@ -78,7 +78,8 @@ public class EventListener implements Listener {
             } else {
                 if (killerLevel.getScore() >= deadLevel.getScore()) {
                     ServerUtils.console("Calculate errors");
-                    return;
+                    // TODO
+                    //return;
                 }
 
                 pool = new MathUtils();

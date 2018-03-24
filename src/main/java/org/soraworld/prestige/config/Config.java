@@ -22,12 +22,12 @@ public class Config {
     private final YamlConfiguration config = new YamlConfiguration();
     private final Plugin plugin;
 
-    public String difficultKillFormula = "";
-    public String simpleKillFormula = "";
-    public String easyKillFormula = "";
-    public String difficultDieFormula = "";
-    public String simpleDieFormula = "";
-    public String easyDieFormula = "";
+    public String difficultKillFormula = "2*($DeadScore$-$KillerScore$)";
+    public String simpleKillFormula = "$DeadScore$/$KillerGradeScore$+1";
+    public String easyKillFormula = "$KillerScore$/($KillerScore$-$DeadScore$)";
+    public String difficultDieFormula = "($KillerScore$-$DeadScore$)/($DeadScore$/10)";
+    public String simpleDieFormula = "$KillerGradeScore$/100";
+    public String easyDieFormula = "($DeadScore$-$KillerScore$)*1.5";
 
     private boolean allWorld = false;
     private final HashSet<World> worlds = new HashSet<>();
@@ -42,12 +42,20 @@ public class Config {
     public void load() {
         if (!file.exists()) {
             setLang(lang);
+            save();
             return;
         }
         try {
             config.load(file);
             setLang(config.getString("lang"));
             readWorlds(config.getStringList("worlds"));
+
+            difficultKillFormula = config.getString("difficultKillFormula");
+            difficultDieFormula = config.getString("difficultDieFormula");
+            simpleKillFormula = config.getString("simpleKillFormula");
+            simpleDieFormula = config.getString("simpleDieFormula");
+            easyKillFormula = config.getString("easyKillFormula");
+            easyDieFormula = config.getString("easyDieFormula");
 
         } catch (Throwable e) {
             e.printStackTrace();
@@ -86,6 +94,14 @@ public class Config {
     public void save() {
         try {
             config.set("lang", lang);
+
+            config.set("difficultKillFormula", difficultKillFormula);
+            config.set("difficultDieFormula", difficultDieFormula);
+            config.set("simpleKillFormula", simpleKillFormula);
+            config.set("simpleDieFormula", simpleDieFormula);
+            config.set("easyKillFormula", easyKillFormula);
+            config.set("easyDieFormula", easyDieFormula);
+
             config.set("worlds", writeWorlds());
             config.save(file);
         } catch (Throwable e) {
