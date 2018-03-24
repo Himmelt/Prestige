@@ -1,13 +1,13 @@
 package org.soraworld.prestige.config;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.core.Level;
-import org.soraworld.prestige.core.PrestigeData;
+import org.soraworld.prestige.core.Rank;
 import org.soraworld.prestige.util.ServerUtils;
 
 import java.io.File;
@@ -23,6 +23,9 @@ public class Config {
     private final LangKeys langKeys;
     private final YamlConfiguration config = new YamlConfiguration();
     private final Plugin plugin;
+    private final File score;
+    private final YamlConfiguration scfg = new YamlConfiguration();
+    private final Rank rank = new Rank();
 
     public String difficultKillFormula = "2*($DeadScore$-$KillerScore$)";
     public String simpleKillFormula = "$DeadScore$/$KillerGradeScore$+1";
@@ -31,13 +34,15 @@ public class Config {
     public String simpleDieFormula = "$KillerGradeScore$/100";
     public String easyDieFormula = "($DeadScore$-$KillerScore$)*1.5";
 
+    private int maxLvl = 0;
     private boolean allWorld = false;
     private final HashSet<World> worlds = new HashSet<>();
-    private final HashMap<Player, PrestigeData> databases = new HashMap<>();
     private final HashMap<Integer, Level> levels = new HashMap<>();
+    private final HashMap<OfflinePlayer, Integer> scores = new HashMap<>();
 
     public Config(File path, Plugin plugin) {
         this.file = new File(path, "config.yml");
+        this.score = new File(path, "score.yml");
         this.langKeys = new LangKeys(new File(path, "lang"));
         this.plugin = plugin;
     }
@@ -65,6 +70,7 @@ public class Config {
             e.printStackTrace();
             ServerUtils.console("config file load exception !!!");
         }
+        loadScore();
     }
 
     public void save() {
@@ -85,6 +91,7 @@ public class Config {
             e.printStackTrace();
             ServerUtils.console("config file save exception !!!");
         }
+        saveScore();
     }
 
     private void readWorlds(List<String> list) {
@@ -117,20 +124,22 @@ public class Config {
 
     private void readLevels(ConfigurationSection section) {
         levels.clear();
+        maxLvl = 0;
         if (section != null) {
             for (String key : section.getKeys(false)) {
                 try {
                     int lvl = Integer.valueOf(key);
                     ConfigurationSection sec = section.getConfigurationSection(key);
                     if (lvl >= 0 && sec != null) {
-                        levels.put(lvl, new Level(sec.getString("name", "Level " + lvl), sec.getInt("score", lvl), sec.getString("prefix", "prefix " + lvl), sec.getString("suffix", "suffix " + lvl)));
+                        if (lvl > maxLvl) maxLvl = lvl;
+                        levels.put(lvl, new Level(lvl, sec.getString("name", "Level " + lvl), sec.getInt("score", lvl), sec.getString("prefix", "prefix " + lvl), sec.getString("suffix", "suffix " + lvl)));
                     }
                 } catch (Throwable ignored) {
                 }
             }
         }
         if (levels.get(0) == null) {
-            levels.put(0, new Level("Level 0", 0, "prefix 0", "suffix 0"));
+            levels.put(0, new Level(0, "Level 0", 0, "prefix 0", "suffix 0"));
         }
     }
 
@@ -144,6 +153,41 @@ public class Config {
                 sec.set("prefix", level.getPrefix());
                 sec.set("suffix", level.getSuffix());
             }
+        }
+    }
+
+    private void saveScore() {
+        try {
+            for (OfflinePlayer player : scores.keySet()) {
+                Integer score = scores.get(player);
+                if (score != null) {
+                    scfg.set(player.getName(), score);
+                }
+            }
+            scfg.save(score);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            ServerUtils.console("score file save exception !!!");
+        }
+    }
+
+    private void loadScore() {
+        scores.clear();
+        if (!score.exists()) {
+            saveScore();
+            return;
+        }
+        try {
+            scfg.load(score);
+            for (String key : scfg.getKeys(false)) {
+                Integer score = scfg.getInt(key);
+                if (!key.isEmpty()) {
+                    scores.put(Bukkit.getOfflinePlayer(key), score);
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            ServerUtils.console("score file load exception !!!");
         }
     }
 
@@ -164,24 +208,6 @@ public class Config {
         return allWorld || worlds.contains(world);
     }
 
-    public void loadPlayerData(Player player) {
-        if (player != null) {
-            if (databases.get(player) == null) {
-                databases.put(player, new PrestigeData(player));
-            }
-        }
-    }
-
-    public void savePlayerData(Player player, boolean quit) {
-        if (player != null) {
-            PrestigeData data = databases.get(player);
-            if (data != null) {
-                // TODO save data to file
-            }
-            if (quit) databases.remove(player);
-        }
-    }
-
     public void openWorld(World world) {
         if (world != null) {
             worlds.add(world);
@@ -194,25 +220,25 @@ public class Config {
         save();
     }
 
-    public PrestigeData getPlayerData(Player player) {
-        if (player != null) {
-            PrestigeData data = databases.get(player);
-            if (data == null) {
-                loadPlayerData(player);
-                data = databases.get(player);
-                if (data == null) {
-                    data = new PrestigeData(player);
-                    databases.put(player, data);
-                }
-            }
-            return data;
+    public int getScore(OfflinePlayer player) {
+        if (scores.get(player) == null) {
+            scores.put(player, 0);
         }
-        return null;
+        return scores.get(player);
     }
 
-    public Level getLevel(int lvl) {
-        if (levels.containsKey(lvl)) return levels.get(lvl);
+    public Level getLevel(int score) {
+        for (int i = maxLvl; i >= 0; i--) {
+            Level level = levels.get(i);
+            if (level != null && score > level.getScore()) {
+                return level;
+            }
+        }
         return levels.get(0);
+    }
+
+    public void updateRank() {
+        rank.update();
     }
 
 }
