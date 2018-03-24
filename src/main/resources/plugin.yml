@@ -1,7 +1,16 @@
 name: Prestige
-main: cn.austin.ud.Prestige
-version: 0.7
+version: 1.7.10-0.0.1
+author: Himmelt
+main: org.soraworld.prestige.Prestige
+website: https://github.com/Himmelt/Prestige
+description: Prestige Plugin.
+
 commands:
   prestige:
-    aliases: [pre,pres]
-    description: /prestige help
+    description: "Prestige - https://github.com/Himmelt/Prestige"
+    usage: "/prestige save|reload|lang|..."
+    permission: prestige.admin
+    permission-message: "You have no permission <prestige.admin>"
+permissions:
+  prestige.admin:
+    default: op
