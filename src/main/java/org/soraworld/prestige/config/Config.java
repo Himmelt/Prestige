@@ -22,13 +22,12 @@ public class Config {
     private final YamlConfiguration config = new YamlConfiguration();
     private final Plugin plugin;
 
-
-    public String difficultKillFormula;
-    public String simpleKillFormula;
-    public String easyKillFormula;
-    public String difficultDieFormula;
-    public String simpleDieFormula;
-    public String easyDieFormula;
+    public String difficultKillFormula = "";
+    public String simpleKillFormula = "";
+    public String easyKillFormula = "";
+    public String difficultDieFormula = "";
+    public String simpleDieFormula = "";
+    public String easyDieFormula = "";
 
     private boolean allWorld = false;
     private final HashSet<World> worlds = new HashSet<>();
@@ -42,51 +41,52 @@ public class Config {
 
     public void load() {
         if (!file.exists()) {
-            if (lang == null || lang.isEmpty()) {
-                lang = "en_us";
-            }
-            langKeys.setLang(lang);
+            setLang(lang);
             return;
         }
         try {
             config.load(file);
-            lang = config.getString("lang");
-            if (lang == null || lang.isEmpty()) {
-                lang = "en_us";
-            }
-            langKeys.setLang(lang);
-            worlds.clear();
-            List<String> list = config.getStringList("worlds");
-            if (list != null && !list.isEmpty()) {
-                if (list.contains("*")) {
-                    allWorld = true;
-                } else {
-                    for (String name : list) {
-                        World world = Bukkit.getWorld(name);
-                        if (world != null) {
-                            worlds.add(world);
-                        }
-                    }
-                }
-            }
+            setLang(config.getString("lang"));
+            readWorlds(config.getStringList("worlds"));
+
         } catch (Throwable e) {
             e.printStackTrace();
             ServerUtils.console("config file load exception !!!");
         }
     }
 
+    private void readWorlds(List<String> list) {
+        worlds.clear();
+        if (list != null && !list.isEmpty()) {
+            if (list.contains("*")) {
+                allWorld = true;
+            } else {
+                for (String name : list) {
+                    World world = Bukkit.getWorld(name);
+                    if (world != null) {
+                        worlds.add(world);
+                    }
+                }
+            }
+        }
+    }
+
+    private List<String> writeWorlds() {
+        ArrayList<String> list = new ArrayList<>();
+        if (allWorld) {
+            list.add("*");
+        } else {
+            for (World world : worlds) {
+                list.add(world.getName());
+            }
+        }
+        return list;
+    }
+
     public void save() {
         try {
             config.set("lang", lang);
-            ArrayList<String> list = new ArrayList<>();
-            if (allWorld) {
-                list.add("*");
-            } else {
-                for (World world : worlds) {
-                    list.add(world.getName());
-                }
-            }
-            config.set("worlds", list);
+            config.set("worlds", writeWorlds());
             config.save(file);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -94,14 +94,16 @@ public class Config {
         }
     }
 
-    public void lang(String lang) {
+    public void setLang(String lang) {
         if (lang != null && !lang.isEmpty()) {
             this.lang = lang;
-            langKeys.setLang(lang);
+        } else {
+            this.lang = "en_us";
         }
+        langKeys.setLang(this.lang);
     }
 
-    public String lang() {
+    public String getLang() {
         return this.lang;
     }
 
@@ -137,6 +139,22 @@ public class Config {
     public void closeWorld(World world) {
         worlds.remove(world);
         save();
+    }
+
+    public PrestigeData getPlayerData(Player player) {
+        if (player != null) {
+            PrestigeData data = databases.get(player);
+            if (data == null) {
+                loadPlayerData(player);
+                data = databases.get(player);
+                if (data == null) {
+                    data = new PrestigeData(player);
+                    databases.put(player, data);
+                }
+            }
+            return data;
+        }
+        return null;
     }
 
 }

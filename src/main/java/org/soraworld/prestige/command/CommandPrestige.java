@@ -35,10 +35,10 @@ public class CommandPrestige extends IICommand {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    ServerUtils.send(sender, LangKeys.format("language", config.lang()));
+                    ServerUtils.send(sender, LangKeys.format("language", config.getLang()));
                 } else {
-                    config.lang(args.get(0));
-                    ServerUtils.send(sender, LangKeys.format("language", config.lang()));
+                    config.setLang(args.get(0));
+                    ServerUtils.send(sender, LangKeys.format("language", config.getLang()));
                 }
                 return true;
             }
@@ -56,7 +56,7 @@ public class CommandPrestige extends IICommand {
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
-                        config.openWorld(((Player) sender).getWorld());
+                        config.openWorld(world);
                         ServerUtils.send(sender, LangKeys.format("openWorld"));
                     } else {
                         ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
@@ -78,7 +78,7 @@ public class CommandPrestige extends IICommand {
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
-                        config.closeWorld(((Player) sender).getWorld());
+                        config.closeWorld(world);
                         ServerUtils.send(sender, LangKeys.format("closeWorld"));
                     } else {
                         ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
