@@ -1,10 +1,14 @@
 package org.soraworld.prestige.config;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.soraworld.prestige.core.PrestigeData;
 import org.soraworld.prestige.util.ServerUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Config {
 
@@ -21,7 +25,10 @@ public class Config {
     public String difficultDieFormula;
     public String simpleDieFormula;
     public String easyDieFormula;
+    private ArrayList<String> openWorldList = new ArrayList<>();
 
+
+    private final HashMap<Player, PrestigeData> databases = new HashMap<>();
 
     public Config(File path, Plugin plugin) {
         this.file = new File(path, "config.yml");
@@ -69,6 +76,28 @@ public class Config {
 
     public String lang() {
         return this.lang;
+    }
+
+    public boolean isOpenWorld(String world) {
+        return openWorldList.contains("*") || openWorldList.contains(world);
+    }
+
+    public void loadPlayerData(Player player) {
+        if (player != null) {
+            if (databases.get(player) == null) {
+                databases.put(player, new PrestigeData(player));
+            }
+        }
+    }
+
+    public void savePlayerData(Player player, boolean quit) {
+        if (player != null) {
+            PrestigeData data = databases.get(player);
+            if (data != null) {
+                // TODO save data to file
+            }
+            if (quit) databases.remove(player);
+        }
     }
 
 }

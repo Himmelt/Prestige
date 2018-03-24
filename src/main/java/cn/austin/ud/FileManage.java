@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.*;
 
-public class FileManager {
+public class FileManage {
 
     static String difficultKillFormula;
     static String simpleKillFormula;

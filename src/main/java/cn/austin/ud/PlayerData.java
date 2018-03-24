@@ -16,7 +16,6 @@ public class PlayerData {
     private FileConfiguration data;
     private String name;
 
-
     public PlayerData(Player p) {
         this.p = p;
         this.getPlayerData();
