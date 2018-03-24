@@ -49,15 +49,15 @@ public class CommandPrestige extends IICommand {
                 if (args.isEmpty()) {
                     if (sender instanceof Player) {
                         config.openWorld(((Player) sender).getWorld());
-                        ServerUtils.send(sender, LangKeys.format("openWorld"));
+                        ServerUtils.send(sender, LangKeys.format("openWorld", ((Player) sender).getWorld().getName()));
                     } else {
-                        ServerUtils.send(sender, LangKeys.format("onlyPlayer"));
+                        ServerUtils.send(sender, LangKeys.format("onlyPlayerOrEmptyArg"));
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
                         config.openWorld(world);
-                        ServerUtils.send(sender, LangKeys.format("openWorld"));
+                        ServerUtils.send(sender, LangKeys.format("openWorld", world.getName()));
                     } else {
                         ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
                     }
@@ -73,7 +73,7 @@ public class CommandPrestige extends IICommand {
                         config.closeWorld(((Player) sender).getWorld());
                         ServerUtils.send(sender, LangKeys.format("closeWorld"));
                     } else {
-                        ServerUtils.send(sender, LangKeys.format("onlyPlayer"));
+                        ServerUtils.send(sender, LangKeys.format("onlyPlayerOrEmptyArg"));
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));

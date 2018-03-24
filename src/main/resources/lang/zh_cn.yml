@@ -6,3 +6,13 @@ chatHead: "[声望段位] "
 language: "当前语言为: %s ."
 configSaved: "配置文件已保存."
 configReloaded: "配置文件已重载."
+
+killChange: "&e你斩杀了 &r%s&r&e , 获得 &a%d &e点声望."
+deadChange: "&e你被 &r%s&r &e斩杀 , 失去 &c%d &e点声望."
+levelUp: "&e恭喜你 , 晋升到了 &r%s&r&e."
+levelDown: "&c很遗憾 , 你掉段到了 &r%s&r&c."
+openWorld: "世界 %s 的声望系统已 &a开启&r."
+closeWorld: "世界 %s 的声望系统已 &c关闭&r."
+invalidWorldName: "参数不是有效世界名 , 或对应世界不存在."
+
+onlyPlayerOrEmptyArg: "请输入参数 , 或在游戏内执行此命令."

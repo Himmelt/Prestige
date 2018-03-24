@@ -1,5 +1,7 @@
 package org.soraworld.prestige.core;
 
+import org.bukkit.entity.Player;
+
 public class Level {
 
     private int lvl;
@@ -20,16 +22,20 @@ public class Level {
         return score;
     }
 
+    public String getName() {
+        return name == null ? name = "" : name;
+    }
+
     public String getPrefix() {
-        return prefix;
+        return prefix == null ? "" : prefix;
     }
 
     public String getSuffix() {
-        return suffix;
+        return suffix == null ? "" : suffix;
     }
 
-    public String getName() {
-        return name;
+    public String fullName(Player player) {
+        return getPrefix() + player.getName() + getSuffix();
     }
 
     public int lvl() {

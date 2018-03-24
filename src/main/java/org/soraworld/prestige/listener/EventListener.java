@@ -10,6 +10,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
+import org.soraworld.prestige.config.LangKeys;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.util.ListUtils;
 import org.soraworld.prestige.util.MathUtils;
@@ -40,63 +41,42 @@ public class EventListener implements Listener {
         final Player killer = deader.getKiller();
         if (killer != null && config.isWorldOpen(killer.getWorld())) {
             // TODO calculate score
-            int killerData = config.getScore(killer);
-            int deaderData = config.getScore(deader);
-            Level killerLevel = config.getLevel(killerData);
-            Level deaderLevel = config.getLevel(deaderData);
+            int killScore = config.getScore(killer);
+            int deadScore = config.getScore(deader);
+            Level killLvl = config.getLevel(killScore);
+            Level deadLvl = config.getLevel(deadScore);
 
             List<String> variables = ListUtils.arrayList("$KillerScore$", "$DeadScore$", "$KillerGradeScore$", "$DeadGradeScore$");
-            List<Integer> values = ListUtils.arrayList(killerData, deaderData, killerLevel.getScore(), deaderLevel.getScore());
+            List<Integer> values = ListUtils.arrayList(killScore, deadScore, killLvl.getScore(), deadLvl.getScore());
 
             MathUtils pool;
-            int killerGet1;
-            int deadGet1;
-            if (killerLevel.equals(deaderLevel)) {
+            int killPoint;
+            int deadPoint;
+            if (killLvl == deadLvl) {
                 pool = new MathUtils();
-                killerGet1 = (int) pool.calculate(replaceFormula(config.simpleKillFormula, variables, values));
-                deadGet1 = (int) pool.calculate(replaceFormula(config.simpleDieFormula, variables, values));
-            } else if (killerLevel.getScore() > deaderLevel.getScore()) {
+                killPoint = (int) pool.calculate(replace(config.simpleKill, variables, values));
+                deadPoint = (int) pool.calculate(replace(config.simpleDie, variables, values));
+            } else if (killLvl.lvl() > deadLvl.lvl()) {
                 pool = new MathUtils();
-                killerGet1 = (int) pool.calculate(this.replaceFormula(config.easyKillFormula, variables, values));
-                deadGet1 = (int) pool.calculate(this.replaceFormula(config.difficultDieFormula, variables, values));
+                killPoint = (int) pool.calculate(replace(config.easyKill, variables, values));
+                deadPoint = (int) pool.calculate(replace(config.difficultDie, variables, values));
             } else {
-                if (killerLevel.getScore() >= deaderLevel.getScore()) {
-                    ServerUtils.console("Calculate errors");
-                    // TODO
-                    //return;
-                }
-
                 pool = new MathUtils();
-                killerGet1 = (int) pool.calculate(this.replaceFormula(config.difficultKillFormula, variables, values));
-                deadGet1 = (int) pool.calculate(this.replaceFormula(config.easyDieFormula, variables, values));
+                killPoint = (int) pool.calculate(replace(config.difficultKill, variables, values));
+                deadPoint = (int) pool.calculate(replace(config.easyDie, variables, values));
             }
 
-            killerData += killerGet1;
-            deaderData -= deadGet1;
+            killScore += killPoint;
+            deadScore -= deadPoint;
 
-            ServerUtils.send(killer, "§e你斩杀了 " + (deaderLevel.getPrefix().equalsIgnoreCase("none") ? "" : deaderLevel.getPrefix()) + deader.getName() + (deaderLevel.getSuffix().equalsIgnoreCase("none") ? "" : deaderLevel.getSuffix()) + " §e" + (killerGet1 < 0 ? "扣了" : "获得") + "了 §a" + killerGet1 + " §e点声望值");
-            ServerUtils.send(deader, "§e你被 " + (killerLevel.getPrefix().equalsIgnoreCase("none") ? "" : killerLevel.getPrefix()) + killer.getName() + (killerLevel.getSuffix().equalsIgnoreCase("none") ? "" : killerLevel.getSuffix()) + " §e斩杀" + "§e" + (deadGet1 >= 0 ? "扣了" : "获得") + "§a " + deadGet1 + " §e点声望值");
+            ServerUtils.send(killer, LangKeys.format("killChange", killLvl.fullName(killer), killPoint));
+            ServerUtils.send(deader, LangKeys.format("deadChange", deadLvl.fullName(deader), deadPoint));
 
-            Level killerNewLevel = config.getLevel(killerData);
-            if (killerNewLevel.lvl() > killerLevel.lvl()) {
-                ServerUtils.send(killer, "§e恭喜你，你晋升到了 " + killerNewLevel.getName());
-                killer.playSound(killer.getLocation(), Sound.ANVIL_USE, 10.0F, killer.getLocation().getPitch());
-            } else if (killerNewLevel.lvl() < killerLevel.lvl()) {
-                ServerUtils.send(killer, "§c很遗憾，你掉段到了 " + killerNewLevel.getName());
-                killer.playSound(killer.getLocation(), Sound.ANVIL_USE, 10.0F, killer.getLocation().getPitch());
-            }
+            checkLevel(killer, killLvl, config.getLevel(killScore));
+            checkLevel(deader, deadLvl, config.getLevel(deadScore));
 
-            Level deaderNewLevel = config.getLevel(deaderData);
-            if (deaderNewLevel.lvl() > deaderNewLevel.lvl()) {
-                ServerUtils.send(deader, "§e恭喜你，你晋升到了 " + deaderNewLevel.getName());
-                deader.playSound(deader.getLocation(), Sound.ANVIL_USE, 10.0F, deader.getLocation().getPitch());
-            } else if (deaderNewLevel.lvl() < deaderNewLevel.lvl()) {
-                ServerUtils.send(deader, "§c很遗憾，你掉段到了 " + deaderNewLevel.getName());
-                deader.playSound(deader.getLocation(), Sound.ANVIL_USE, 10.0F, deader.getLocation().getPitch());
-            }
-
-            config.setScore(killer, killerData);
-            config.setScore(deader, deaderData);
+            config.setScore(killer, killScore);
+            config.setScore(deader, deadScore);
             config.saveScore();
             config.updateRank();
         }
@@ -107,11 +87,22 @@ public class EventListener implements Listener {
         config.save();
     }
 
-    private String replaceFormula(String formula, List<String> keys, List<Integer> values) {
+    private String replace(String formula, List<String> keys, List<Integer> values) {
         for (int i = 0; i < keys.size(); ++i) {
-            formula = formula.replace(keys.get(i), String.valueOf(values.get(i)));
+            Integer val = values.get(i);
+            formula = formula.replace(keys.get(i), val < 0 ? "(" + val + ")" : val.toString());
         }
         return formula;
+    }
+
+    private void checkLevel(Player player, Level old, Level now) {
+        if (now.lvl() > old.lvl()) {
+            ServerUtils.send(player, LangKeys.format("levelUp", now.getName()));
+            player.playSound(player.getLocation(), Sound.LEVEL_UP, 10.0F, player.getLocation().getPitch());
+        } else if (now.lvl() < old.lvl()) {
+            ServerUtils.send(player, LangKeys.format("levelDown", now.getName()));
+            player.playSound(player.getLocation(), Sound.ANVIL_USE, 10.0F, player.getLocation().getPitch());
+        }
     }
 
 }

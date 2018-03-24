@@ -6,3 +6,13 @@ chatHead: "[Prestige] "
 language: "current language is: %s ."
 configSaved: "config file saved."
 configReloaded: "config file reloaded."
+
+killChange: "&eYou killed &r%s&r&e, get &a%d&e points prestige."
+deadChange: "&eYou are killed by &r%s&r &e, lose &c%d&e points prestige."
+levelUp: "&eCongratulations! Level up to &r%s&r&e."
+levelDown: "&cSorry! Level down to &r%s&r&c."
+openWorld: "world %s's prestige system is ON."
+closeWorld: "world %s's prestige system is OFF."
+invalidWorldName: "arg is not valid world name or the world is not exist."
+
+onlyPlayerOrEmptyArg: "please enter args or execute it in game."

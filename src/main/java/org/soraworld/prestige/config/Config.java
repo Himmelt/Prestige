@@ -28,12 +28,12 @@ public class Config {
     private final YamlConfiguration scfg = new YamlConfiguration();
     private final Rank rank = new Rank();
 
-    public String difficultKillFormula = "2*($DeadScore$-$KillerScore$)";
-    public String simpleKillFormula = "$DeadScore$/$KillerGradeScore$+1";
-    public String easyKillFormula = "$KillerScore$/($KillerScore$-$DeadScore$)";
-    public String difficultDieFormula = "($KillerScore$-$DeadScore$)/($DeadScore$/10)";
-    public String simpleDieFormula = "$KillerGradeScore$/100";
-    public String easyDieFormula = "($DeadScore$-$KillerScore$)*1.5";
+    public String difficultKill = "2*($DeadScore$-$KillerScore$)";
+    public String simpleKill = "$DeadScore$/$KillerGradeScore$+1";
+    public String easyKill = "$KillerScore$/($KillerScore$-$DeadScore$)";
+    public String difficultDie = "($KillerScore$-$DeadScore$)/($DeadScore$/10)";
+    public String simpleDie = "$KillerGradeScore$/100";
+    public String easyDie = "($DeadScore$-$KillerScore$)*1.5";
 
     private int maxLvl = 0;
     private boolean allWorld = false;
@@ -60,12 +60,12 @@ public class Config {
             readWorlds(config.getStringList("worlds"));
             readLevels(config.getConfigurationSection("levels"));
 
-            difficultKillFormula = config.getString("difficultKillFormula");
-            difficultDieFormula = config.getString("difficultDieFormula");
-            simpleKillFormula = config.getString("simpleKillFormula");
-            simpleDieFormula = config.getString("simpleDieFormula");
-            easyKillFormula = config.getString("easyKillFormula");
-            easyDieFormula = config.getString("easyDieFormula");
+            difficultKill = config.getString("difficultKillFormula");
+            difficultDie = config.getString("difficultDieFormula");
+            simpleKill = config.getString("simpleKillFormula");
+            simpleDie = config.getString("simpleDieFormula");
+            easyKill = config.getString("easyKillFormula");
+            easyDie = config.getString("easyDieFormula");
 
         } catch (Throwable e) {
             e.printStackTrace();
@@ -78,12 +78,12 @@ public class Config {
         try {
             config.set("lang", lang);
 
-            config.set("difficultKillFormula", difficultKillFormula);
-            config.set("difficultDieFormula", difficultDieFormula);
-            config.set("simpleKillFormula", simpleKillFormula);
-            config.set("simpleDieFormula", simpleDieFormula);
-            config.set("easyKillFormula", easyKillFormula);
-            config.set("easyDieFormula", easyDieFormula);
+            config.set("difficultKillFormula", difficultKill);
+            config.set("difficultDieFormula", difficultDie);
+            config.set("simpleKillFormula", simpleKill);
+            config.set("simpleDieFormula", simpleDie);
+            config.set("easyKillFormula", easyKill);
+            config.set("easyDieFormula", easyDie);
 
             writeLevels(config.createSection("levels"));
             config.set("worlds", writeWorlds());
