@@ -12,8 +12,16 @@ public class Config {
     private final File file;
     private final LangKeys langKeys;
     private final YamlConfiguration config = new YamlConfiguration();
-
     private final Plugin plugin;
+
+
+    public String difficultKillFormula;
+    public String simpleKillFormula;
+    public String easyKillFormula;
+    public String difficultDieFormula;
+    public String simpleDieFormula;
+    public String easyDieFormula;
+
 
     public Config(File path, Plugin plugin) {
         this.file = new File(path, "config.yml");
