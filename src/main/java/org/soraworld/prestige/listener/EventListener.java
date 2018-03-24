@@ -95,6 +95,9 @@ public class EventListener implements Listener {
                 deader.playSound(deader.getLocation(), Sound.ANVIL_USE, 10.0F, deader.getLocation().getPitch());
             }
 
+            config.setScore(killer, killerData);
+            config.setScore(deader, deaderData);
+            config.saveScore();
             config.updateRank();
         }
     }

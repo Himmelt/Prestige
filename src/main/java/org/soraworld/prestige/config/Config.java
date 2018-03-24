@@ -5,6 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.Rank;
@@ -156,7 +157,7 @@ public class Config {
         }
     }
 
-    private void saveScore() {
+    public void saveScore() {
         try {
             for (OfflinePlayer player : scores.keySet()) {
                 Integer score = scores.get(player);
@@ -220,11 +221,15 @@ public class Config {
         save();
     }
 
-    public int getScore(OfflinePlayer player) {
+    public int getScore(Player player) {
         if (scores.get(player) == null) {
             scores.put(player, 0);
         }
         return scores.get(player);
+    }
+
+    public void setScore(Player player, int score) {
+        scores.put(player, score);
     }
 
     public Level getLevel(int score) {
