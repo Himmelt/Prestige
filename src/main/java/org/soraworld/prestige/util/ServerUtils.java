@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 
 public class ServerUtils {
 
-    private static String PLAIN_HEAD = "[Treasure] ";
+    private static String PLAIN_HEAD = "[Prestige] ";
     private static String COLOR_HEAD = ChatColor.YELLOW + PLAIN_HEAD + ChatColor.RESET;
 
     public static void broadcast(String message) {

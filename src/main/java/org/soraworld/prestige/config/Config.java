@@ -1,5 +1,7 @@
 package org.soraworld.prestige.config;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -9,6 +11,8 @@ import org.soraworld.prestige.util.ServerUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 public class Config {
 
@@ -25,9 +29,9 @@ public class Config {
     public String difficultDieFormula;
     public String simpleDieFormula;
     public String easyDieFormula;
-    private ArrayList<String> openWorldList = new ArrayList<>();
 
-
+    private boolean allWorld = false;
+    private final HashSet<World> worlds = new HashSet<>();
     private final HashMap<Player, PrestigeData> databases = new HashMap<>();
 
     public Config(File path, Plugin plugin) {
@@ -51,6 +55,20 @@ public class Config {
                 lang = "en_us";
             }
             langKeys.setLang(lang);
+            worlds.clear();
+            List<String> list = config.getStringList("worlds");
+            if (list != null && !list.isEmpty()) {
+                if (list.contains("*")) {
+                    allWorld = true;
+                } else {
+                    for (String name : list) {
+                        World world = Bukkit.getWorld(name);
+                        if (world != null) {
+                            worlds.add(world);
+                        }
+                    }
+                }
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             ServerUtils.console("config file load exception !!!");
@@ -60,6 +78,15 @@ public class Config {
     public void save() {
         try {
             config.set("lang", lang);
+            ArrayList<String> list = new ArrayList<>();
+            if (allWorld) {
+                list.add("*");
+            } else {
+                for (World world : worlds) {
+                    list.add(world.getName());
+                }
+            }
+            config.set("worlds", list);
             config.save(file);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -78,8 +105,8 @@ public class Config {
         return this.lang;
     }
 
-    public boolean isOpenWorld(String world) {
-        return openWorldList.contains("*") || openWorldList.contains(world);
+    public boolean isWorldOpen(World world) {
+        return allWorld || worlds.contains(world);
     }
 
     public void loadPlayerData(Player player) {
@@ -98,6 +125,18 @@ public class Config {
             }
             if (quit) databases.remove(player);
         }
+    }
+
+    public void openWorld(World world) {
+        if (world != null) {
+            worlds.add(world);
+        }
+        save();
+    }
+
+    public void closeWorld(World world) {
+        worlds.remove(world);
+        save();
     }
 
 }

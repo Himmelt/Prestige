@@ -1,6 +1,9 @@
 package org.soraworld.prestige.command;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
 import org.soraworld.prestige.config.LangKeys;
@@ -36,6 +39,50 @@ public class CommandPrestige extends IICommand {
                 } else {
                     config.lang(args.get(0));
                     ServerUtils.send(sender, LangKeys.format("language", config.lang()));
+                }
+                return true;
+            }
+        });
+        addSub(new IICommand("open") {
+            @Override
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
+                if (args.isEmpty()) {
+                    if (sender instanceof Player) {
+                        config.openWorld(((Player) sender).getWorld());
+                        ServerUtils.send(sender, LangKeys.format("openWorld"));
+                    } else {
+                        ServerUtils.send(sender, LangKeys.format("onlyPlayer"));
+                    }
+                } else {
+                    World world = Bukkit.getWorld(args.get(0));
+                    if (world != null) {
+                        config.openWorld(((Player) sender).getWorld());
+                        ServerUtils.send(sender, LangKeys.format("openWorld"));
+                    } else {
+                        ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
+                    }
+                }
+                return true;
+            }
+        });
+        addSub(new IICommand("close") {
+            @Override
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
+                if (args.isEmpty()) {
+                    if (sender instanceof Player) {
+                        config.closeWorld(((Player) sender).getWorld());
+                        ServerUtils.send(sender, LangKeys.format("closeWorld"));
+                    } else {
+                        ServerUtils.send(sender, LangKeys.format("onlyPlayer"));
+                    }
+                } else {
+                    World world = Bukkit.getWorld(args.get(0));
+                    if (world != null) {
+                        config.closeWorld(((Player) sender).getWorld());
+                        ServerUtils.send(sender, LangKeys.format("closeWorld"));
+                    } else {
+                        ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
+                    }
                 }
                 return true;
             }
