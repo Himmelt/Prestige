@@ -6,60 +6,35 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
-import org.soraworld.prestige.config.LangKeys;
-import org.soraworld.prestige.util.ServerUtils;
+import org.soraworld.violet.Violet;
+import org.soraworld.violet.command.CommandViolet;
+import org.soraworld.violet.command.IICommand;
+import org.soraworld.violet.constant.Violets;
 
 import java.util.ArrayList;
 
-public class CommandPrestige extends IICommand {
+public class CommandPrestige extends CommandViolet {
 
-    public CommandPrestige(String name, final Plugin plugin, final Config config) {
-        super(name);
-        addSub(new IICommand("save") {
-            @Override
-            public boolean execute(CommandSender sender, ArrayList<String> args) {
-                config.save();
-                ServerUtils.send(sender, LangKeys.format("configSaved"));
-                return true;
-            }
-        });
-        addSub(new IICommand("reload") {
-            @Override
-            public boolean execute(CommandSender sender, ArrayList<String> args) {
-                config.load();
-                ServerUtils.send(sender, LangKeys.format("configReloaded"));
-                return true;
-            }
-        });
-        addSub(new IICommand("lang") {
-            @Override
-            public boolean execute(CommandSender sender, ArrayList<String> args) {
-                if (args.isEmpty()) {
-                    ServerUtils.send(sender, LangKeys.format("language", config.getLang()));
-                } else {
-                    config.setLang(args.get(0));
-                    ServerUtils.send(sender, LangKeys.format("language", config.getLang()));
-                }
-                return true;
-            }
-        });
+    public CommandPrestige(String name, final Config config, final Plugin plugin) {
+        super(name, config, plugin);
         addSub(new IICommand("open") {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
                     if (sender instanceof Player) {
-                        config.openWorld(((Player) sender).getWorld());
-                        ServerUtils.send(sender, LangKeys.format("openWorld", ((Player) sender).getWorld().getName()));
+                        World world = ((Player) sender).getWorld();
+                        config.openWorld(world);
+                        config.iiChat.send(sender, config.iiLang.format("openWorld", world.getName()));
                     } else {
-                        ServerUtils.send(sender, LangKeys.format("onlyPlayerOrEmptyArg"));
+                        config.iiChat.send(sender, Violet.translate(Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
                         config.openWorld(world);
-                        ServerUtils.send(sender, LangKeys.format("openWorld", world.getName()));
+                        config.iiChat.send(sender, config.iiLang.format("openWorld", world.getName()));
                     } else {
-                        ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
+                        config.iiChat.send(sender, config.iiLang.format("invalidWorldName"));
                     }
                 }
                 return true;
@@ -70,33 +45,24 @@ public class CommandPrestige extends IICommand {
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
                     if (sender instanceof Player) {
-                        config.closeWorld(((Player) sender).getWorld());
-                        ServerUtils.send(sender, LangKeys.format("closeWorld"));
+                        World world = ((Player) sender).getWorld();
+                        config.closeWorld(world);
+                        config.iiChat.send(sender, config.iiLang.format("closeWorld", world.getName()));
                     } else {
-                        ServerUtils.send(sender, LangKeys.format("onlyPlayerOrEmptyArg"));
+                        config.iiChat.send(sender, Violet.translate(Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
                         config.closeWorld(world);
-                        ServerUtils.send(sender, LangKeys.format("closeWorld"));
+                        config.iiChat.send(sender, config.iiLang.format("closeWorld", world.getName()));
                     } else {
-                        ServerUtils.send(sender, LangKeys.format("invalidWorldName"));
+                        config.iiChat.send(sender, config.iiLang.format("invalidWorldName"));
                     }
                 }
                 return true;
             }
         });
-    }
-
-    public boolean execute(CommandSender sender, ArrayList<String> args) {
-        if (args.size() >= 1) {
-            IICommand sub = subs.get(args.remove(0));
-            if (sub != null) {
-                return sub.execute(sender, args);
-            }
-        }
-        return false;
     }
 
 }

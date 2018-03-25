@@ -1,31 +1,29 @@
 package org.soraworld.prestige.config;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.Rank;
-import org.soraworld.prestige.util.ServerUtils;
+import org.soraworld.violet.config.IIConfig;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-public class Config {
+public class Config extends IIConfig {
 
-    private String lang = "en_us";
-    private final File file;
-    private final LangKeys langKeys;
-    private final YamlConfiguration config = new YamlConfiguration();
-    private final Plugin plugin;
     private final File score;
-    private final YamlConfiguration scfg = new YamlConfiguration();
+    private final YamlConfiguration score_yaml = new YamlConfiguration();
     private final Rank rank = new Rank();
 
     public String difficultKill = "2*($DeadScore$-$KillerScore$)";
@@ -42,57 +40,8 @@ public class Config {
     private final HashMap<OfflinePlayer, Integer> scores = new HashMap<>();
 
     public Config(File path, Plugin plugin) {
-        this.file = new File(path, "config.yml");
+        super(path, plugin);
         this.score = new File(path, "score.yml");
-        this.langKeys = new LangKeys(new File(path, "lang"));
-        this.plugin = plugin;
-    }
-
-    public void load() {
-        if (!file.exists()) {
-            setLang(lang);
-            save();
-            return;
-        }
-        try {
-            config.load(file);
-            setLang(config.getString("lang"));
-            readWorlds(config.getStringList("worlds"));
-            readLevels(config.getConfigurationSection("levels"));
-
-            difficultKill = config.getString("difficultKillFormula");
-            difficultDie = config.getString("difficultDieFormula");
-            simpleKill = config.getString("simpleKillFormula");
-            simpleDie = config.getString("simpleDieFormula");
-            easyKill = config.getString("easyKillFormula");
-            easyDie = config.getString("easyDieFormula");
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-            ServerUtils.console("config file load exception !!!");
-        }
-        loadScore();
-    }
-
-    public void save() {
-        try {
-            config.set("lang", lang);
-
-            config.set("difficultKillFormula", difficultKill);
-            config.set("difficultDieFormula", difficultDie);
-            config.set("simpleKillFormula", simpleKill);
-            config.set("simpleDieFormula", simpleDie);
-            config.set("easyKillFormula", easyKill);
-            config.set("easyDieFormula", easyDie);
-
-            writeLevels(config.createSection("levels"));
-            config.set("worlds", writeWorlds());
-            config.save(file);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            ServerUtils.console("config file save exception !!!");
-        }
-        saveScore();
     }
 
     private void readWorlds(List<String> list) {
@@ -162,13 +111,13 @@ public class Config {
             for (OfflinePlayer player : scores.keySet()) {
                 Integer score = scores.get(player);
                 if (score != null) {
-                    scfg.set(player.getName(), score);
+                    score_yaml.set(player.getName(), score);
                 }
             }
-            scfg.save(score);
+            score_yaml.save(score);
         } catch (Throwable e) {
-            e.printStackTrace();
-            ServerUtils.console("score file save exception !!!");
+            if (debug) e.printStackTrace();
+            iiChat.console("&cScore file save exception !!!");
         }
     }
 
@@ -179,30 +128,17 @@ public class Config {
             return;
         }
         try {
-            scfg.load(score);
-            for (String key : scfg.getKeys(false)) {
-                Integer score = scfg.getInt(key);
+            score_yaml.load(score);
+            for (String key : score_yaml.getKeys(false)) {
+                Integer score = score_yaml.getInt(key);
                 if (!key.isEmpty()) {
                     scores.put(Bukkit.getOfflinePlayer(key), score);
                 }
             }
         } catch (Throwable e) {
-            e.printStackTrace();
-            ServerUtils.console("score file load exception !!!");
+            if (debug) e.printStackTrace();
+            iiChat.console("&cScore file load exception !!!");
         }
-    }
-
-    public void setLang(String lang) {
-        if (lang != null && !lang.isEmpty()) {
-            this.lang = lang;
-        } else {
-            this.lang = "en_us";
-        }
-        langKeys.setLang(this.lang);
-    }
-
-    public String getLang() {
-        return this.lang;
     }
 
     public boolean isWorldOpen(World world) {
@@ -229,7 +165,7 @@ public class Config {
     }
 
     public void setScore(Player player, int score) {
-        scores.put(player, score);
+        scores.put(player, score < 0 ? 0 : score);
     }
 
     public Level getLevel(int score) {
@@ -244,6 +180,38 @@ public class Config {
 
     public void updateRank() {
         rank.update();
+    }
+
+    protected void loadOptions() {
+        easyDie = config_yaml.getString("easyDieFormula");
+        easyKill = config_yaml.getString("easyKillFormula");
+        simpleDie = config_yaml.getString("simpleDieFormula");
+        simpleKill = config_yaml.getString("simpleKillFormula");
+        difficultDie = config_yaml.getString("difficultDieFormula");
+        difficultKill = config_yaml.getString("difficultKillFormula");
+        readWorlds(config_yaml.getStringList("worlds"));
+        readLevels(config_yaml.getConfigurationSection("levels"));
+    }
+
+    protected void saveOptions() {
+        config_yaml.set("easyDieFormula", easyDie);
+        config_yaml.set("easyKillFormula", easyKill);
+        config_yaml.set("simpleDieFormula", simpleDie);
+        config_yaml.set("simpleKillFormula", simpleKill);
+        config_yaml.set("difficultDieFormula", difficultDie);
+        config_yaml.set("difficultKillFormula", difficultKill);
+        config_yaml.set("worlds", writeWorlds());
+        writeLevels(config_yaml.createSection("levels"));
+    }
+
+    @Nonnull
+    protected ChatColor defaultChatColor() {
+        return ChatColor.GOLD;
+    }
+
+    @Nonnull
+    protected String defaultChatHead() {
+        return Constant.PLUGIN_NAME;
     }
 
 }
