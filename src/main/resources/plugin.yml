@@ -2,6 +2,7 @@ name: Prestige
 version: 1.7.10-0.1.1
 author: Himmelt
 main: org.soraworld.prestige.Prestige
+depend: [Violet]
 website: https://github.com/Himmelt/Prestige
 description: Prestige Plugin.
 
