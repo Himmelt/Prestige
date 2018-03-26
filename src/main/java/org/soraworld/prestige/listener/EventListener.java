@@ -11,7 +11,7 @@ import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
 import org.soraworld.prestige.core.Level;
-import org.soraworld.prestige.util.MathUtils;
+import org.soraworld.prestige.util.MathUtil;
 import org.soraworld.violet.util.ListUtil;
 
 import java.util.List;
@@ -49,19 +49,19 @@ public class EventListener implements Listener {
             List<String> variables = ListUtil.arrayList("$KillerScore$", "$DeadScore$", "$KillerGradeScore$", "$DeadGradeScore$");
             List<Integer> values = ListUtil.arrayList(killScore, deadScore, killLvl.getScore(), deadLvl.getScore());
 
-            MathUtils pool;
+            MathUtil pool;
             int killPoint;
             int deadPoint;
             if (killLvl == deadLvl) {
-                pool = new MathUtils();
+                pool = new MathUtil();
                 killPoint = (int) pool.calculate(replace(config.simpleKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.simpleDie, variables, values));
             } else if (killLvl.lvl() > deadLvl.lvl()) {
-                pool = new MathUtils();
+                pool = new MathUtil();
                 killPoint = (int) pool.calculate(replace(config.easyKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.difficultDie, variables, values));
             } else {
-                pool = new MathUtils();
+                pool = new MathUtil();
                 killPoint = (int) pool.calculate(replace(config.difficultKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.easyDie, variables, values));
             }
@@ -69,8 +69,8 @@ public class EventListener implements Listener {
             killScore += killPoint;
             deadScore -= deadPoint;
 
-            config.iiChat.send(killer, config.iiLang.format("killChange", killLvl.fullName(killer), killPoint));
-            config.iiChat.send(deader, config.iiLang.format("deadChange", deadLvl.fullName(deader), deadPoint));
+            config.iiChat.send(killer, config.iiLang.format("killChange", deadLvl.fullName(deader), killPoint));
+            config.iiChat.send(deader, config.iiLang.format("deadChange", killLvl.fullName(killer), deadPoint));
 
             checkLevel(killer, killLvl, config.getLevel(killScore));
             checkLevel(deader, deadLvl, config.getLevel(deadScore));

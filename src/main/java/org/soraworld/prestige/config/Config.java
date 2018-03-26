@@ -191,6 +191,7 @@ public class Config extends IIConfig {
         difficultKill = config_yaml.getString("difficultKillFormula");
         readWorlds(config_yaml.getStringList("worlds"));
         readLevels(config_yaml.getConfigurationSection("levels"));
+        loadScore();
     }
 
     protected void saveOptions() {
@@ -202,6 +203,7 @@ public class Config extends IIConfig {
         config_yaml.set("difficultKillFormula", difficultKill);
         config_yaml.set("worlds", writeWorlds());
         writeLevels(config_yaml.createSection("levels"));
+        saveScore();
     }
 
     @Nonnull
@@ -211,7 +213,7 @@ public class Config extends IIConfig {
 
     @Nonnull
     protected String defaultChatHead() {
-        return Constant.PLUGIN_NAME;
+        return "[" + Constant.PLUGIN_NAME + "] ";
     }
 
 }

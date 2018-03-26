@@ -26,7 +26,7 @@ public class CommandPrestige extends CommandViolet {
                         config.openWorld(world);
                         config.iiChat.send(sender, config.iiLang.format("openWorld", world.getName()));
                     } else {
-                        config.iiChat.send(sender, Violet.translate(Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
+                        config.iiChat.send(sender, Violet.translate(config.iiLang.getLang(), Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
@@ -49,7 +49,7 @@ public class CommandPrestige extends CommandViolet {
                         config.closeWorld(world);
                         config.iiChat.send(sender, config.iiLang.format("closeWorld", world.getName()));
                     } else {
-                        config.iiChat.send(sender, Violet.translate(Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
+                        config.iiChat.send(sender, Violet.translate(config.iiLang.getLang(), Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));

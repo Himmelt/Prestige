@@ -3,7 +3,7 @@ package org.soraworld.prestige.util;
 import java.util.Collections;
 import java.util.Stack;
 
-public class MathUtils {
+public class MathUtil {
 
     private Stack<String> postfixStack = new Stack<>();
     private Stack<Character> opStack = new Stack<>();
