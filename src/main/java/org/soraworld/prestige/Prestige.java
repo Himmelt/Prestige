@@ -31,7 +31,7 @@ public class Prestige extends VioletPlugin {
 
     @Nullable
     protected IICommand registerCommand(IIConfig config) {
-        if (config instanceof Config) return new CommandPrestige(Constant.PLUGIN_ID, (Config) config, this);
+        if (config instanceof Config) return new CommandPrestige(Constant.PLUGIN_ID, null, (Config) config, this);
         return null;
     }
 

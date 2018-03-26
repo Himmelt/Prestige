@@ -10,8 +10,6 @@ commands:
   prestige:
     description: "Prestige - https://github.com/Himmelt/Prestige"
     usage: "/prestige save|reload|lang|debug..."
-    permission: prestige.admin
-    permission-message: "You have no permission <prestige.admin>"
 permissions:
   prestige.admin:
     default: op

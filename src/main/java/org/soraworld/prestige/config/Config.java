@@ -6,7 +6,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.Level;
@@ -157,14 +156,14 @@ public class Config extends IIConfig {
         save();
     }
 
-    public int getScore(Player player) {
+    public int getScore(OfflinePlayer player) {
         if (scores.get(player) == null) {
             scores.put(player, 0);
         }
         return scores.get(player);
     }
 
-    public void setScore(Player player, int score) {
+    public void setScore(OfflinePlayer player, int score) {
         scores.put(player, score < 0 ? 0 : score);
     }
 
