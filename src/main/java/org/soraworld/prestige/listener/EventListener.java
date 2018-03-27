@@ -11,6 +11,7 @@ import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
 import org.soraworld.prestige.core.Level;
+import org.soraworld.prestige.core.PlayerScore;
 import org.soraworld.prestige.util.MathUtil;
 import org.soraworld.violet.util.ListUtil;
 
@@ -39,24 +40,22 @@ public class EventListener implements Listener {
         final Player killer = deader.getKiller();
         if (killer != null && config.isWorldOpen(killer.getWorld())) {
             // TODO calculate score
-            int killScore = config.getScore(killer);
-            int deadScore = config.getScore(deader);
-            if (killScore < 0) killScore = 0;
-            if (deadScore < 0) deadScore = 0;
-            Level killLvl = config.getLevel(killScore);
-            Level deadLvl = config.getLevel(deadScore);
+            PlayerScore psKill = config.getScore(killer);
+            PlayerScore psDead = config.getScore(deader);
+            Level killLvl = psKill.getLevel();
+            Level deadLvl = psDead.getLevel();
 
             List<String> variables = ListUtil.arrayList("$KillerScore$", "$DeadScore$", "$KillerGradeScore$", "$DeadGradeScore$");
-            List<Integer> values = ListUtil.arrayList(killScore, deadScore, killLvl.getScore(), deadLvl.getScore());
+            List<Integer> values = ListUtil.arrayList(psKill.getScore(), psDead.getScore(), killLvl.getScore(), deadLvl.getScore());
 
             MathUtil pool;
             int killPoint;
             int deadPoint;
-            if (killLvl == deadLvl) {
+            if (killLvl.getScore() == deadLvl.getScore()) {
                 pool = new MathUtil();
                 killPoint = (int) pool.calculate(replace(config.simpleKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.simpleDie, variables, values));
-            } else if (killLvl.lvl() > deadLvl.lvl()) {
+            } else if (killLvl.getScore() > deadLvl.getScore()) {
                 pool = new MathUtil();
                 killPoint = (int) pool.calculate(replace(config.easyKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.difficultDie, variables, values));
@@ -66,19 +65,16 @@ public class EventListener implements Listener {
                 deadPoint = (int) pool.calculate(replace(config.easyDie, variables, values));
             }
 
-            killScore += killPoint;
-            deadScore -= deadPoint;
+            psKill.addScore(killPoint);
+            psDead.addScore(deadPoint * -1);
 
             config.iiChat.send(killer, config.iiLang.format("killChange", deadLvl.fullName(deader), killPoint));
             config.iiChat.send(deader, config.iiLang.format("deadChange", killLvl.fullName(killer), deadPoint));
 
-            checkLevel(killer, killLvl, config.getLevel(killScore));
-            checkLevel(deader, deadLvl, config.getLevel(deadScore));
+            checkLevel(killer, psKill.getLevel(), killLvl);
+            checkLevel(deader, psDead.getLevel(), deadLvl);
 
-            config.setScore(killer, killScore);
-            config.setScore(deader, deadScore);
             config.saveScore();
-            config.updateRank();
         }
     }
 
@@ -95,11 +91,11 @@ public class EventListener implements Listener {
         return formula;
     }
 
-    private void checkLevel(Player player, Level old, Level now) {
-        if (now.lvl() > old.lvl()) {
+    private void checkLevel(Player player, Level now, Level old) {
+        if (now.getScore() > old.getScore()) {
             config.iiChat.send(player, config.iiLang.format("levelUp", now.getName()));
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 10.0F, player.getLocation().getPitch());
-        } else if (now.lvl() < old.lvl()) {
+        } else if (now.getScore() < old.getScore()) {
             config.iiChat.send(player, config.iiLang.format("levelDown", now.getName()));
             player.playSound(player.getLocation(), Sound.ANVIL_USE, 10.0F, player.getLocation().getPitch());
         }
