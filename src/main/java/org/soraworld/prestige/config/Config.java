@@ -4,8 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.constant.Constant;
@@ -63,27 +61,32 @@ public class Config extends IIConfig {
         levels.clear();
         if (list != null) {
             for (Object obj : list) {
-                if (obj instanceof ConfigurationSection) {
-                    ConfigurationSection section = (ConfigurationSection) obj;
-                    levels.add(new Level(
-                            section.getString("name", "Level"),
-                            section.getInt("score", 0),
-                            section.getString("prefix", ""),
-                            section.getString("suffix", "")
-                    ));
+                if (obj instanceof LinkedHashMap) {
+                    Map map = (Map) obj;
+                    Object name = map.get("name");
+                    Object score = map.get("score");
+                    Object prefix = map.get("prefix");
+                    Object suffix = map.get("suffix");
+                    if (name instanceof String && score instanceof Integer) {
+                        if (!(prefix instanceof String)) prefix = "";
+                        if (!(suffix instanceof String)) suffix = "";
+                        levels.add(new Level(
+                                (String) name, (Integer) score, (String) prefix, (String) suffix
+                        ));
+                    }
                 }
             }
         }
     }
 
-    private List<MemoryConfiguration> writeLevels() {
-        List<MemoryConfiguration> list = new ArrayList<>();
+    private List<?> writeLevels() {
+        List<Map> list = new ArrayList<>();
         for (Level level : levels) {
-            MemoryConfiguration sec = new MemoryConfiguration();
-            sec.set("name", level.getName());
-            sec.set("score", level.getScore());
-            sec.set("prefix", level.getPrefix());
-            sec.set("suffix", level.getSuffix());
+            Map<String, Object> sec = new HashMap<>();
+            sec.put("name", level.getName());
+            sec.put("score", level.getScore());
+            sec.put("prefix", level.getPrefix());
+            sec.put("suffix", level.getSuffix());
             list.add(sec);
         }
         return list;
@@ -195,6 +198,11 @@ public class Config extends IIConfig {
     @Nonnull
     protected String defaultChatHead() {
         return "[" + Constant.PLUGIN_NAME + "] ";
+    }
+
+    public void createLevel(int score) {
+        Level level = new Level("Level", score, "", "");
+        if (!levels.contains(level)) levels.add(level);
     }
 
 }

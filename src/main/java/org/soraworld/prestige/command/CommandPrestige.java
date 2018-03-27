@@ -191,6 +191,22 @@ public class CommandPrestige extends CommandViolet {
                 return new ArrayList<>();
             }
         });
+        addSub(new IICommand("createlvl", Constant.PERM_ADMIN, config, "clvl") {
+            @Override
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
+                if (args.isEmpty()) {
+                    config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_ARG));
+                } else {
+                    try {
+                        int score = Integer.valueOf(args.get(0));
+                        config.createLevel(score);
+                    } catch (Throwable ignored) {
+                        config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
+                    }
+                }
+                return true;
+            }
+        });
     }
 
 }
