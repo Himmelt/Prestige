@@ -1,7 +1,6 @@
 package org.soraworld.prestige.command;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,14 +25,9 @@ public class CommandPrestige extends CommandViolet {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.size() == 2) {
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(args.get(0));
-                    if (player == null) {
-                        config.iiChat.send(sender, config.iiLang.format("noSuchPlayer", args.get(0)));
-                        return true;
-                    }
                     try {
                         int score = Integer.valueOf(args.get(1));
-                        PlayerScore ps = config.getScore(player);
+                        PlayerScore ps = config.getScore(args.get(0));
                         ps.setScore(ps.getScore() + score);
                         config.iiChat.send(sender, config.iiLang.format("addScore", ps.getName(), score, ps.getScore()));
                     } catch (Throwable ignored) {
@@ -59,13 +53,8 @@ public class CommandPrestige extends CommandViolet {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.size() == 2) {
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(args.get(0));
-                    if (player == null) {
-                        config.iiChat.send(sender, config.iiLang.format("noSuchPlayer", args.get(0)));
-                        return true;
-                    }
                     try {
-                        PlayerScore ps = config.getScore(player);
+                        PlayerScore ps = config.getScore(args.get(0));
                         ps.setScore(Integer.valueOf(args.get(1)));
                         config.iiChat.send(sender, config.iiLang.format("setScore", ps.getName(), ps.getScore()));
                     } catch (Throwable ignored) {
@@ -91,7 +80,7 @@ public class CommandPrestige extends CommandViolet {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (sender instanceof Player) {
-                    PlayerScore ps = config.getScore((Player) sender);
+                    PlayerScore ps = config.getScore(sender.getName());
                     config.iiChat.send(sender, config.iiLang.format("infoScore", ps.getScore()));
                     config.iiChat.send(sender, config.iiLang.format("infoLevel", ps.getLevel().getName()));
                 } else {
@@ -104,25 +93,15 @@ public class CommandPrestige extends CommandViolet {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    showRank(sender, 1);
+                    config.showRank(sender, 1);
                 } else {
                     try {
-                        int page = Integer.valueOf(args.get(0));
-                        showRank(sender, page);
+                        config.showRank(sender, Integer.valueOf(args.get(0)));
                     } catch (Throwable ignored) {
                         config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
                     }
                 }
                 return true;
-            }
-
-            private void showRank(CommandSender sender, int page) {
-                if (page < 1) page = 1;
-                config.iiChat.send(sender, config.iiLang.format("rankHead"));
-                for (int i = page; i <= page + 10; i++) {
-                    config.iiChat.send(sender, config.iiLang.format("rankLine", i));
-                }
-                config.iiChat.send(sender, config.iiLang.format("rankFoot"));
             }
         });
         addSub(new IICommand("open", Constant.PERM_ADMIN, config) {

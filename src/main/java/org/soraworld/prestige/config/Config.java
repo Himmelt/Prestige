@@ -2,8 +2,9 @@ package org.soraworld.prestige.config;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.constant.Constant;
@@ -30,7 +31,7 @@ public class Config extends IIConfig {
     private final HashSet<World> worlds = new HashSet<>();
     private final TreeSet<Level> levels = new TreeSet<>();
     private final TreeSet<PlayerScore> rank = new TreeSet<>();
-    private final HashMap<OfflinePlayer, PlayerScore> scores = new HashMap<>();
+    private final HashMap<String, PlayerScore> scores = new HashMap<>();
 
     public Config(File path, Plugin plugin) {
         super(path, plugin);
@@ -77,6 +78,9 @@ public class Config extends IIConfig {
                 }
             }
         }
+        if (levels.isEmpty()) {
+            levels.add(new Level("Level", 0, "", ""));
+        }
     }
 
     private List<?> writeLevels() {
@@ -94,9 +98,11 @@ public class Config extends IIConfig {
 
     public void saveScore() {
         try {
+            LinkedHashMap<String, Object> scores = new LinkedHashMap<>();
             for (PlayerScore ps : rank) {
-                score_yaml.set(ps.getName(), ps.getScore());
+                scores.put(ps.getName(), ps.getScore());
             }
+            score_yaml.set("scores", scores);
             score_yaml.save(score_file);
         } catch (Throwable e) {
             if (debug) e.printStackTrace();
@@ -113,8 +119,12 @@ public class Config extends IIConfig {
         }
         try {
             score_yaml.load(score_file);
-            for (String key : score_yaml.getKeys(false)) {
-                setScore(Bukkit.getOfflinePlayer(key), score_yaml.getInt(key));
+            Object obj = score_yaml.get("scores");
+            if (obj instanceof MemorySection) {
+                MemorySection sec = (MemorySection) obj;
+                for (String player : sec.getKeys(false)) {
+                    setScore(player, score_yaml.getInt(player));
+                }
             }
         } catch (Throwable e) {
             if (debug) e.printStackTrace();
@@ -136,34 +146,53 @@ public class Config extends IIConfig {
         save();
     }
 
-    public PlayerScore getScore(OfflinePlayer player) {
+    public PlayerScore getScore(String player) {
         PlayerScore ps = scores.get(player);
         if (ps == null) {
-            ps = new PlayerScore(player, 0);
+            ps = new PlayerScore(player, this, 0);
             rank.add(ps);
             scores.put(player, ps);
         }
         return ps;
     }
 
-    public void setScore(OfflinePlayer player, int score) {
+    public void setScore(String player, int score) {
         PlayerScore ps = scores.get(player);
         if (ps == null) {
-            ps = new PlayerScore(player, score);
-            rank.add(ps);
+            ps = new PlayerScore(player, this, score);
             scores.put(player, ps);
         }
         ps.setScore(score);
     }
 
-    public Level getLevel(OfflinePlayer player) {
-        PlayerScore ps = scores.get(player);
-        if (ps == null) {
-            ps = new PlayerScore(player, 0);
-            rank.add(ps);
-            scores.put(player, ps);
+    public void showRank(CommandSender sender, int page) {
+        if (page < 1) page = 1;
+        iiChat.send(sender, iiLang.format("rankHead"));
+        Iterator<PlayerScore> it = rank.iterator();
+        for (int i = 1; i <= page * 10 && it.hasNext(); i++) {
+            PlayerScore ps = it.next();
+            if (i >= page * 10 - 9) {
+                iiChat.send(sender, iiLang.format("rankLine", i, ps.getName(), ps.getScore(), ps.getLevel().getName()));
+            }
         }
-        return ps.getLevel();
+        iiChat.send(sender, iiLang.format("rankFoot", page, rank.size() / 10 + 1));
+    }
+
+    public void createLevel(int score) {
+        Level level = new Level("Level", score, "", "");
+        if (!levels.contains(level)) levels.add(level);
+    }
+
+    public Level computeLevel(int score) {
+        for (Level level : levels) {
+            if (score < level.getScore()) return level;
+        }
+        return levels.last();
+    }
+
+    public void updateRank(PlayerScore ps) {
+        if (rank.contains(ps)) rank.remove(ps);
+        rank.add(ps);
     }
 
     protected void loadOptions() {
@@ -198,11 +227,6 @@ public class Config extends IIConfig {
     @Nonnull
     protected String defaultChatHead() {
         return "[" + Constant.PLUGIN_NAME + "] ";
-    }
-
-    public void createLevel(int score) {
-        Level level = new Level("Level", score, "", "");
-        if (!levels.contains(level)) levels.add(level);
     }
 
 }

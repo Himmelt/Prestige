@@ -40,8 +40,8 @@ public class EventListener implements Listener {
         final Player killer = deader.getKiller();
         if (killer != null && config.isWorldOpen(killer.getWorld())) {
             // TODO calculate score
-            PlayerScore psKill = config.getScore(killer);
-            PlayerScore psDead = config.getScore(deader);
+            PlayerScore psKill = config.getScore(killer.getName());
+            PlayerScore psDead = config.getScore(deader.getName());
             Level killLvl = psKill.getLevel();
             Level deadLvl = psDead.getLevel();
 

@@ -40,6 +40,7 @@ public class Level implements Comparable<Level> {
 
     @Override
     public int compareTo(@Nonnull Level level) {
+        // Ascending
         return this.score - level.score;
     }
 

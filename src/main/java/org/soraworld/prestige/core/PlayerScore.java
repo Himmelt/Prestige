@@ -1,6 +1,6 @@
 package org.soraworld.prestige.core;
 
-import org.bukkit.OfflinePlayer;
+import org.soraworld.prestige.config.Config;
 
 import javax.annotation.Nonnull;
 
@@ -8,25 +8,23 @@ public class PlayerScore implements Comparable<PlayerScore> {
 
     private int score;
     private Level level;
-    private final OfflinePlayer player;
+    private final Config config;
+    private final String player;
 
-    public PlayerScore(OfflinePlayer player) {
+    public PlayerScore(String player, Config config, int score) {
         this.player = player;
-    }
-
-    public PlayerScore(OfflinePlayer player, int score) {
-        this.player = player;
+        this.config = config;
         setScore(score);
     }
 
     public String getName() {
-        return player.getName();
+        return player;
     }
 
     public void setScore(int score) {
         if (score < 0) score = 0;
         this.score = score;
-        updateLevel();
+        update();
     }
 
     public void addScore(int score) {
@@ -37,27 +35,31 @@ public class PlayerScore implements Comparable<PlayerScore> {
         return score;
     }
 
-    private void updateLevel() {
-
+    private void update() {
+        config.updateRank(this);
+        this.level = config.computeLevel(this.score);
     }
 
     @Override
     public int compareTo(@Nonnull PlayerScore other) {
-        return this.score - other.score;
+        // Descending
+        // return other.score - this.score;
+        if (this.player.equals(other.player)) return 0;
+        return this.score > other.score ? -1 : 1;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof PlayerScore && this.player == ((PlayerScore) obj).player;
+        return this == obj || obj instanceof PlayerScore && this.player.equals(((PlayerScore) obj).player);
+    }
+
+    @Override
+    public String toString() {
+        return "{" + player + "," + score + "}";
     }
 
     public Level getLevel() {
-        // TODO level
         return level;
     }
 
-
-    public OfflinePlayer getPlayer() {
-        return player;
-    }
 }
