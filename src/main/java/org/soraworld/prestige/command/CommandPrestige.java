@@ -65,9 +65,9 @@ public class CommandPrestige extends CommandViolet {
                         return true;
                     }
                     try {
-                        int point = Integer.valueOf(args.get(1));
-                        config.setScore(player, point);
-                        config.iiChat.send(sender, config.iiLang.format("setScore", player.getName(), config.getScore(player)));
+                        PlayerScore ps = config.getScore(player);
+                        ps.setScore(Integer.valueOf(args.get(1)));
+                        config.iiChat.send(sender, config.iiLang.format("setScore", ps.getName(), ps.getScore()));
                     } catch (Throwable ignored) {
                         config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
                     }

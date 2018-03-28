@@ -61,7 +61,7 @@ public class Config extends IIConfig {
         levels.clear();
         if (list != null) {
             for (Object obj : list) {
-                if (obj instanceof LinkedHashMap) {
+                if (obj instanceof Map) {
                     Map map = (Map) obj;
                     Object name = map.get("name");
                     Object score = map.get("score");
@@ -82,7 +82,7 @@ public class Config extends IIConfig {
     private List<?> writeLevels() {
         List<Map> list = new ArrayList<>();
         for (Level level : levels) {
-            Map<String, Object> sec = new HashMap<>();
+            Map<String, Object> sec = new LinkedHashMap<>();
             sec.put("name", level.getName());
             sec.put("score", level.getScore());
             sec.put("prefix", level.getPrefix());
@@ -94,8 +94,8 @@ public class Config extends IIConfig {
 
     public void saveScore() {
         try {
-            for (PlayerScore player : rank) {
-                score_yaml.set(player.getName(), player.getScore());
+            for (PlayerScore ps : rank) {
+                score_yaml.set(ps.getName(), ps.getScore());
             }
             score_yaml.save(score_file);
         } catch (Throwable e) {
