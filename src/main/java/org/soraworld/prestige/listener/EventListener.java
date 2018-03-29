@@ -1,5 +1,6 @@
 package org.soraworld.prestige.listener;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,7 +31,15 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         if (!event.isCancelled()) {
-            // TODO chat prefix format
+            if (event.getFormat().contains("%1$s")) {
+                PlayerScore ps = config.getScore(event.getPlayer().getName());
+                Level level = ps.getLevel();
+                StringBuilder build = new StringBuilder(event.getFormat());
+                build.insert(build.indexOf("%1$s"), level.getPrefix().replace('&', ChatColor.COLOR_CHAR));
+                build.insert(build.indexOf("%1$s") + 4, level.getSuffix().replace('&', ChatColor.COLOR_CHAR) + ChatColor.WHITE);
+                System.out.println(build.toString());
+                event.setFormat(build.toString());
+            }
         }
     }
 
