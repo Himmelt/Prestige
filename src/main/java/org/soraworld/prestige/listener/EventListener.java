@@ -53,6 +53,8 @@ public class EventListener implements Listener {
             int deadPoint;
             if (killLvl.getScore() == deadLvl.getScore()) {
                 pool = new MathUtil();
+                System.out.println(replace(config.simpleKill, variables, values));
+                System.out.println(replace(config.simpleDie, variables, values));
                 killPoint = (int) pool.calculate(replace(config.simpleKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.simpleDie, variables, values));
             } else if (killLvl.getScore() > deadLvl.getScore()) {
@@ -68,8 +70,8 @@ public class EventListener implements Listener {
             psKill.addScore(killPoint);
             psDead.addScore(deadPoint * -1);
 
-            config.iiChat.send(killer, config.iiLang.format("killChange", deadLvl.fullName(deader), killPoint));
-            config.iiChat.send(deader, config.iiLang.format("deadChange", killLvl.fullName(killer), deadPoint));
+            config.iiChat.send(killer, config.iiLang.format("killChange", deadLvl.fullName(deader), killPoint, psKill.getScore()));
+            config.iiChat.send(deader, config.iiLang.format("deadChange", killLvl.fullName(killer), deadPoint, psDead.getScore()));
 
             checkLevel(killer, psKill.getLevel(), killLvl);
             checkLevel(deader, psDead.getLevel(), deadLvl);

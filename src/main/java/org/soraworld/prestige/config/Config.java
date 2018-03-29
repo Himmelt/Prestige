@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.Level;
@@ -68,22 +69,36 @@ public class Config extends IIConfig {
                     Object score = map.get("score");
                     Object prefix = map.get("prefix");
                     Object suffix = map.get("suffix");
+                    Object commands = map.get("commands");
                     if (name instanceof String && score instanceof Integer) {
                         if (!(prefix instanceof String)) prefix = "";
                         if (!(suffix instanceof String)) suffix = "";
-                        levels.add(new Level(
-                                (String) name, (Integer) score, (String) prefix, (String) suffix
-                        ));
+                        if (!(commands instanceof List)) commands = new ArrayList<String>();
+                        Level level = new Level((String) name, (Integer) score, (String) prefix, (String) suffix);
+                        for (Object o : (List) commands) {
+                            if (o instanceof String) {
+                                level.addCommand((String) o);
+                            }
+                        }
+                        levels.add(level);
                     }
                 }
             }
         }
+        defaultLevel();
+    }
+
+    private void defaultLevel() {
         if (levels.isEmpty()) {
-            levels.add(new Level("Level", 0, "", ""));
+            Level level = new Level("Level", 10, "", "");
+            level.addCommand("tell {player} prestige command test 1.");
+            level.addCommand("tell {player} prestige command test 2.");
+            levels.add(level);
         }
     }
 
     private List<?> writeLevels() {
+        defaultLevel();
         List<Map> list = new ArrayList<>();
         for (Level level : levels) {
             Map<String, Object> sec = new LinkedHashMap<>();
@@ -91,6 +106,7 @@ public class Config extends IIConfig {
             sec.put("score", level.getScore());
             sec.put("prefix", level.getPrefix());
             sec.put("suffix", level.getSuffix());
+            sec.put("commands", level.getCommands());
             list.add(sec);
         }
         return list;
@@ -123,7 +139,7 @@ public class Config extends IIConfig {
             if (obj instanceof MemorySection) {
                 MemorySection sec = (MemorySection) obj;
                 for (String player : sec.getKeys(false)) {
-                    setScore(player, score_yaml.getInt(player));
+                    setScore(player, sec.getInt(player));
                 }
             }
         } catch (Throwable e) {
@@ -227,6 +243,18 @@ public class Config extends IIConfig {
     @Nonnull
     protected String defaultChatHead() {
         return "[" + Constant.PLUGIN_NAME + "] ";
+    }
+
+    public void execCommands() {
+        for (PlayerScore ps : rank) {
+            Player player = Bukkit.getPlayer(ps.getName());
+            if (player != null) {
+                Level level = ps.getLevel();
+                for (String cmd : level.getCommands()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
+                }
+            }
+        }
     }
 
 }

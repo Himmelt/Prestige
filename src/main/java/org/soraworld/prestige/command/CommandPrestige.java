@@ -170,6 +170,13 @@ public class CommandPrestige extends CommandViolet {
                 return new ArrayList<>();
             }
         });
+        addSub(new IICommand("exec", Constant.PERM_ADMIN, config) {
+            @Override
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
+                config.execCommands();
+                return true;
+            }
+        });
         addSub(new IICommand("createlvl", Constant.PERM_ADMIN, config, "clvl") {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
