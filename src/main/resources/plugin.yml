@@ -1,5 +1,5 @@
 name: Prestige
-version: 1.7.10-0.2.1
+version: 1.7.10-1.0.0
 author: Himmelt
 main: org.soraworld.prestige.Prestige
 depend: [Violet]
@@ -9,7 +9,7 @@ description: Prestige Plugin.
 commands:
   prestige:
     description: "Prestige - https://github.com/Himmelt/Prestige"
-    usage: "/prestige save|reload|lang|debug..."
+    usage: "/prestige add|set|info|top|open|close|exec|clvl"
 permissions:
   prestige.admin:
     default: op

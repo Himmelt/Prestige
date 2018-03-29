@@ -81,8 +81,7 @@ public class CommandPrestige extends CommandViolet {
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (sender instanceof Player) {
                     PlayerScore ps = config.getScore(sender.getName());
-                    config.iiChat.send(sender, config.iiLang.format("infoScore", ps.getScore()));
-                    config.iiChat.send(sender, config.iiLang.format("infoLevel", ps.getLevel().getName()));
+                    config.iiChat.send(sender, config.iiLang.format("playerInfo", ps.getScore(), ps.getLevel().getName()));
                 } else {
                     config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_ONLY_PLAYER));
                 }

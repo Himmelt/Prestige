@@ -53,8 +53,6 @@ public class EventListener implements Listener {
             int deadPoint;
             if (killLvl.getScore() == deadLvl.getScore()) {
                 pool = new MathUtil();
-                System.out.println(replace(config.simpleKill, variables, values));
-                System.out.println(replace(config.simpleDie, variables, values));
                 killPoint = (int) pool.calculate(replace(config.simpleKill, variables, values));
                 deadPoint = (int) pool.calculate(replace(config.simpleDie, variables, values));
             } else if (killLvl.getScore() > deadLvl.getScore()) {

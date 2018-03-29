@@ -23,8 +23,10 @@ public class PlayerScore implements Comparable<PlayerScore> {
 
     public void setScore(int score) {
         if (score < 0) score = 0;
-        this.score = score;
-        update();
+        if (this.score != score) {
+            this.score = score;
+            update();
+        }
     }
 
     public void addScore(int score) {
