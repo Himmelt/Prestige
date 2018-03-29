@@ -209,6 +209,18 @@ public class Config extends IIConfig {
         rank.add(ps);
     }
 
+    public void execCommands() {
+        for (PlayerScore ps : rank) {
+            Player player = Bukkit.getPlayer(ps.getName());
+            if (player != null) {
+                Level level = ps.getLevel();
+                for (String cmd : level.getCommands()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
+                }
+            }
+        }
+    }
+
     protected void loadOptions() {
         easyDie = config_yaml.getString("easyDieFormula");
         easyKill = config_yaml.getString("easyKillFormula");
@@ -243,16 +255,9 @@ public class Config extends IIConfig {
         return "[" + Constant.PLUGIN_NAME + "] ";
     }
 
-    public void execCommands() {
-        for (PlayerScore ps : rank) {
-            Player player = Bukkit.getPlayer(ps.getName());
-            if (player != null) {
-                Level level = ps.getLevel();
-                for (String cmd : level.getCommands()) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
-                }
-            }
-        }
+    @Override
+    public String defaultAdminPerm() {
+        return Constant.PERM_ADMIN;
     }
 
 }
