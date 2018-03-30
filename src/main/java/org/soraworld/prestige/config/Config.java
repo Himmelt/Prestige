@@ -166,6 +166,8 @@ public class Config extends IIConfig {
         PlayerScore ps = scores.get(player);
         if (ps == null) {
             ps = new PlayerScore(player, this, 0);
+            rank.remove(ps);
+            rank.add(ps);
             scores.put(player, ps);
         }
         return ps;
@@ -209,6 +211,7 @@ public class Config extends IIConfig {
     }
 
     public void updateRank(PlayerScore ps) {
+        rank.remove(ps);
         rank.add(ps);
     }
 
