@@ -2,7 +2,7 @@
 # 在中文windows系统下请使用GB2312编码
 # Please use GB2312 encoding on zh_CN Windows OS for Chinese language file
 
-chatHead: "[声望] "
+chatHead: "[声  望] "
 
 killChange: "&e你斩杀了 &r%s&r&e , 获得 &a%d &e点声望 , 现有 &a%d &e点声望."
 deadChange: "&e你被 &r%s&r &e斩杀 , 失去 &c%d &e点声望 , 现有 &a%d &e点声望."
@@ -12,9 +12,9 @@ openWorld: "世界 &e%s&r 的声望系统已 &a开启&r."
 closeWorld: "世界 &e%s&r 的声望系统已 &c关闭&r."
 invalidWorldName: "参数不是有效世界名 , 或对应世界不存在."
 noSuchPlayer: "名为 %s 的玩家不存在."
-addScore: "已为玩家 %s 添加 %d 点声望 , 当前声望为 %d ."
-setScore: "已设置玩家 %s 的声望为 %d ."
+addScore: "已为玩家 &e%s&r 添加 &a%d&r 点声望 , 当前声望为 &a%d&r ."
+setScore: "已设置玩家 &e%s&r 的声望为 &a%d&r ."
 playerInfo: "我的声望信息: &a%d&r 点声望 , 处于 &e%s&r 段位."
 rankHead: "============声望排行榜============"
-rankLine: "%2d - %-12.12s %-10d %s"
+rankLine: "%2d - %-12.12s %10d %s"
 rankFoot: "=============第 %d/%d 页============="
