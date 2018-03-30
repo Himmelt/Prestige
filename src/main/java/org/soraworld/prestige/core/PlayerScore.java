@@ -14,6 +14,7 @@ public class PlayerScore implements Comparable<PlayerScore> {
     public PlayerScore(String player, Config config, int score) {
         this.player = player;
         this.config = config;
+        this.level = config.computeLevel(this.score);
         setScore(score);
     }
 

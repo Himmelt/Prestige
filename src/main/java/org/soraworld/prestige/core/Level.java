@@ -59,4 +59,9 @@ public class Level implements Comparable<Level> {
         return commands;
     }
 
+    @Override
+    public String toString() {
+        return "{Level:" + name + ",score:" + score + "}";
+    }
+
 }
