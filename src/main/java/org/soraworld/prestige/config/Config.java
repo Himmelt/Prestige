@@ -177,6 +177,8 @@ public class Config extends IIConfig {
         PlayerScore ps = scores.get(player);
         if (ps == null) {
             ps = new PlayerScore(player, this, score);
+            rank.remove(ps);
+            rank.add(ps);
             scores.put(player, ps);
         }
         ps.setScore(score);
