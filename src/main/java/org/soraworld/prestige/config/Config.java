@@ -195,7 +195,10 @@ public class Config extends IIConfig {
 
     public void createLevel(int score) {
         Level level = new Level("Level", score, "", "");
-        if (!levels.contains(level)) levels.add(level);
+        if (!levels.contains(level)) {
+            levels.add(level);
+            save();
+        }
     }
 
     public Level computeLevel(int score) {
@@ -209,11 +212,21 @@ public class Config extends IIConfig {
         rank.add(ps);
     }
 
-    public void execCommands() {
-        for (PlayerScore ps : rank) {
-            Player player = Bukkit.getPlayer(ps.getName());
+    public void execCommands(String name) {
+        if (name == null || name.isEmpty()) {
+            for (PlayerScore ps : rank) {
+                Player player = Bukkit.getPlayer(ps.getName());
+                if (player != null) {
+                    Level level = ps.getLevel();
+                    for (String cmd : level.getCommands()) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
+                    }
+                }
+            }
+        } else {
+            Player player = Bukkit.getPlayer(name);
             if (player != null) {
-                Level level = ps.getLevel();
+                Level level = getScore(name).getLevel();
                 for (String cmd : level.getCommands()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
                 }

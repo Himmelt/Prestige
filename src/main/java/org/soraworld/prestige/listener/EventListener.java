@@ -37,7 +37,6 @@ public class EventListener implements Listener {
                 StringBuilder build = new StringBuilder(event.getFormat());
                 build.insert(build.indexOf("%1$s"), level.getPrefix().replace('&', ChatColor.COLOR_CHAR));
                 build.insert(build.indexOf("%1$s") + 4, level.getSuffix().replace('&', ChatColor.COLOR_CHAR) + ChatColor.WHITE);
-                System.out.println(build.toString());
                 event.setFormat(build.toString());
             }
         }

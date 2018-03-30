@@ -29,6 +29,7 @@ public class CommandPrestige extends CommandViolet {
                         int score = Integer.valueOf(args.get(1));
                         PlayerScore ps = config.getScore(args.get(0));
                         ps.setScore(ps.getScore() + score);
+                        config.saveScore();
                         config.iiChat.send(sender, config.iiLang.format("addScore", ps.getName(), score, ps.getScore()));
                     } catch (Throwable ignored) {
                         config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
@@ -56,6 +57,7 @@ public class CommandPrestige extends CommandViolet {
                     try {
                         PlayerScore ps = config.getScore(args.get(0));
                         ps.setScore(Integer.valueOf(args.get(1)));
+                        config.saveScore();
                         config.iiChat.send(sender, config.iiLang.format("setScore", ps.getName(), ps.getScore()));
                     } catch (Throwable ignored) {
                         config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
@@ -172,11 +174,25 @@ public class CommandPrestige extends CommandViolet {
         addSub(new IICommand("exec", Constant.PERM_ADMIN, config) {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
-                config.execCommands();
+                if (args.isEmpty()) {
+                    config.execCommands(null);
+                } else {
+                    config.execCommands(args.get(0));
+                }
                 return true;
             }
+
+            @Override
+            public List<String> getTabCompletions(ArrayList<String> args) {
+                if (args.isEmpty()) {
+                    return ListUtil.getMatchPlayers("");
+                } else if (args.size() == 1) {
+                    return ListUtil.getMatchPlayers(args.get(0));
+                }
+                return new ArrayList<>();
+            }
         });
-        addSub(new IICommand("createlvl", Constant.PERM_ADMIN, config, "clvl") {
+        addSub(new IICommand("clvl", Constant.PERM_ADMIN, config) {
             @Override
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
