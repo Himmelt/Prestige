@@ -1,6 +1,9 @@
 # Prestige
 Prestige
 
+### TODO
+玩家分数改变或新实例时重新排序。
+
 ### 指令
 ```
 管理员指令:需要<prestige.admin>权限

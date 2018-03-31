@@ -139,7 +139,8 @@ public class Config extends IIConfig {
             if (obj instanceof MemorySection) {
                 MemorySection sec = (MemorySection) obj;
                 for (String player : sec.getKeys(false)) {
-                    setScore(player, sec.getInt(player));
+                    PlayerScore ps = getScore(player);
+                    ps.setScore(sec.getInt(player));
                 }
             }
         } catch (Throwable e) {
@@ -173,17 +174,6 @@ public class Config extends IIConfig {
         return ps;
     }
 
-    public void setScore(String player, int score) {
-        PlayerScore ps = scores.get(player);
-        if (ps == null) {
-            ps = new PlayerScore(player, this, score);
-            rank.remove(ps);
-            rank.add(ps);
-            scores.put(player, ps);
-        }
-        ps.setScore(score);
-    }
-
     public void showRank(CommandSender sender, int page) {
         if (page < 1) page = 1;
         iiChat.send(sender, iiLang.format("rankHead"));
@@ -212,9 +202,8 @@ public class Config extends IIConfig {
         return levels.last();
     }
 
-    public void updateRank(PlayerScore ps) {
-        rank.remove(ps);
-        rank.add(ps);
+    public TreeSet<PlayerScore> getRank() {
+        return rank;
     }
 
     public void execCommands(String name) {

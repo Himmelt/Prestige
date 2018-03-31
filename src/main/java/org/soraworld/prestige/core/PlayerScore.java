@@ -8,14 +8,14 @@ public class PlayerScore implements Comparable<PlayerScore> {
 
     private int score;
     private Level level;
-    private final Config config;
     private final String player;
+    private final Config config;
 
     public PlayerScore(String player, Config config, int score) {
         this.player = player;
         this.config = config;
+        this.score = score < 0 ? 0 : score;
         this.level = config.computeLevel(this.score);
-        setScore(score);
     }
 
     public String getName() {
@@ -25,8 +25,12 @@ public class PlayerScore implements Comparable<PlayerScore> {
     public void setScore(int score) {
         if (score < 0) score = 0;
         if (this.score != score) {
+            // remove
+            config.getRank().remove(this);
             this.score = score;
-            update();
+            this.level = config.computeLevel(score);
+            // add
+            config.getRank().add(this);
         }
     }
 
@@ -36,11 +40,6 @@ public class PlayerScore implements Comparable<PlayerScore> {
 
     public int getScore() {
         return score;
-    }
-
-    private void update() {
-        config.updateRank(this);
-        this.level = config.computeLevel(this.score);
     }
 
     @Override
