@@ -3,6 +3,7 @@ version: 1.7.10-1.0.2
 author: Himmelt
 main: org.soraworld.prestige.Prestige
 depend: [Violet]
+softdepend: [PlaceholderAPI]
 website: https://github.com/Himmelt/Prestige
 description: Prestige Plugin.
 
