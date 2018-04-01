@@ -114,7 +114,7 @@ public class Config extends IIConfig {
 
     public void saveScore() {
         try {
-            LinkedHashMap<String, Object> scores = new LinkedHashMap<>();
+            LinkedHashMap<String, Integer> scores = new LinkedHashMap<>();
             for (PlayerScore ps : rank) {
                 scores.put(ps.getName(), ps.getScore());
             }
