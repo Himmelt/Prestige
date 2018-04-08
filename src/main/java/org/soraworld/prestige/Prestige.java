@@ -35,4 +35,12 @@ public class Prestige extends VioletPlugin {
         return null;
     }
 
+    protected void afterEnable() {
+
+    }
+
+    protected void beforeDisable() {
+
+    }
+
 }

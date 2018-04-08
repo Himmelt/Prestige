@@ -8,7 +8,6 @@ import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
 import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.PlayerScore;
-import org.soraworld.violet.Violet;
 import org.soraworld.violet.command.CommandViolet;
 import org.soraworld.violet.command.IICommand;
 import org.soraworld.violet.constant.Violets;
@@ -30,12 +29,12 @@ public class CommandPrestige extends CommandViolet {
                         PlayerScore ps = config.getScore(args.get(0));
                         ps.setScore(ps.getScore() + score);
                         config.saveScore();
-                        config.iiChat.send(sender, config.iiLang.format("addScore", ps.getName(), score, ps.getScore()));
+                        config.send(sender, "addScore", ps.getName(), score, ps.getScore());
                     } catch (Throwable ignored) {
-                        config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
+                        config.sendV(sender, Violets.KEY_INVALID_INT);
                     }
                 } else {
-                    config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_ARG));
+                    config.sendV(sender, Violets.KEY_INVALID_ARG);
                 }
                 return true;
             }
@@ -58,12 +57,12 @@ public class CommandPrestige extends CommandViolet {
                         PlayerScore ps = config.getScore(args.get(0));
                         ps.setScore(Integer.valueOf(args.get(1)));
                         config.saveScore();
-                        config.iiChat.send(sender, config.iiLang.format("setScore", ps.getName(), ps.getScore()));
+                        config.send(sender, "setScore", ps.getName(), ps.getScore());
                     } catch (Throwable ignored) {
-                        config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
+                        config.sendV(sender, Violets.KEY_INVALID_INT);
                     }
                 } else {
-                    config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_ARG));
+                    config.sendV(sender, Violets.KEY_INVALID_ARG);
                 }
                 return true;
             }
@@ -83,9 +82,9 @@ public class CommandPrestige extends CommandViolet {
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (sender instanceof Player) {
                     PlayerScore ps = config.getScore(sender.getName());
-                    config.iiChat.send(sender, config.iiLang.format("playerInfo", ps.getScore(), ps.getLevel().getName()));
+                    config.send(sender, "playerInfo", ps.getScore(), ps.getLevel().getName());
                 } else {
-                    config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_ONLY_PLAYER));
+                    config.sendV(sender, Violets.KEY_ONLY_PLAYER);
                 }
                 return true;
             }
@@ -99,7 +98,7 @@ public class CommandPrestige extends CommandViolet {
                     try {
                         config.showRank(sender, Integer.valueOf(args.get(0)));
                     } catch (Throwable ignored) {
-                        config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
+                        config.sendV(sender, Violets.KEY_INVALID_INT);
                     }
                 }
                 return true;
@@ -112,17 +111,17 @@ public class CommandPrestige extends CommandViolet {
                     if (sender instanceof Player) {
                         World world = ((Player) sender).getWorld();
                         config.openWorld(world);
-                        config.iiChat.send(sender, config.iiLang.format("openWorld", world.getName()));
+                        config.send(sender, "openWorld", world.getName());
                     } else {
-                        config.iiChat.send(sender, Violet.translate(config.iiLang.getLang(), Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
+                        config.sendV(sender, Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG);
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
                         config.openWorld(world);
-                        config.iiChat.send(sender, config.iiLang.format("openWorld", world.getName()));
+                        config.send(sender, "openWorld", world.getName());
                     } else {
-                        config.iiChat.send(sender, config.iiLang.format("invalidWorldName"));
+                        config.send(sender, "invalidWorldName");
                     }
                 }
                 return true;
@@ -145,17 +144,17 @@ public class CommandPrestige extends CommandViolet {
                     if (sender instanceof Player) {
                         World world = ((Player) sender).getWorld();
                         config.closeWorld(world);
-                        config.iiChat.send(sender, config.iiLang.format("closeWorld", world.getName()));
+                        config.send(sender, "closeWorld", world.getName());
                     } else {
-                        config.iiChat.send(sender, Violet.translate(config.iiLang.getLang(), Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG));
+                        config.sendV(sender, Violets.KEY_ONLY_PLAYER_OR_INVALID_ARG);
                     }
                 } else {
                     World world = Bukkit.getWorld(args.get(0));
                     if (world != null) {
                         config.closeWorld(world);
-                        config.iiChat.send(sender, config.iiLang.format("closeWorld", world.getName()));
+                        config.send(sender, "closeWorld", world.getName());
                     } else {
-                        config.iiChat.send(sender, config.iiLang.format("invalidWorldName"));
+                        config.send(sender, "invalidWorldName");
                     }
                 }
                 return true;
@@ -190,22 +189,6 @@ public class CommandPrestige extends CommandViolet {
                     return ListUtil.getMatchPlayers(args.get(0));
                 }
                 return new ArrayList<>();
-            }
-        });
-        addSub(new IICommand("clvl", Constant.PERM_ADMIN, config) {
-            @Override
-            public boolean execute(CommandSender sender, ArrayList<String> args) {
-                if (args.isEmpty()) {
-                    config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_ARG));
-                } else {
-                    try {
-                        int score = Integer.valueOf(args.get(0));
-                        config.createLevel(score);
-                    } catch (Throwable ignored) {
-                        config.iiChat.send(sender, Violet.translate(config.getLang(), Violets.KEY_INVALID_INT));
-                    }
-                }
-                return true;
             }
         });
     }

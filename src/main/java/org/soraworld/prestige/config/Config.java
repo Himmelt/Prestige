@@ -252,6 +252,10 @@ public class Config extends IIConfig {
         saveScore();
     }
 
+    public void afterLoad() {
+
+    }
+
     @Nonnull
     protected ChatColor defaultChatColor() {
         return ChatColor.GOLD;
