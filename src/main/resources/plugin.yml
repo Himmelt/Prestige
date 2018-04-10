@@ -1,5 +1,5 @@
 name: Prestige
-version: 1.7.10-1.0.3
+version: 1.7.10-1.0.4
 author: Himmelt
 main: org.soraworld.prestige.Prestige
 depend: [Violet]

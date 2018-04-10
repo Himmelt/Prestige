@@ -1,20 +1,19 @@
-# ÖĞÎÄÓïÑÔÎÄ¼ş(Chinese Language File)
-# ÔÚÖĞÎÄwindowsÏµÍ³ÏÂÇëÊ¹ÓÃGB2312±àÂë
-# Please use GB2312 encoding on zh_CN Windows OS for Chinese language file
+# ä¸­æ–‡è¯­è¨€æ–‡ä»¶(Chinese Language File)
+# è¯·ä½¿ç”¨ UTF-8 ç¼–ç 
 
-chatHead: "[Éù  Íû] "
+chatHead: "[å£°  æœ›] "
 
-killChange: "&eÄãÕ¶É±ÁË &r%s&r&e , »ñµÃ &a%d &eµãÉùÍû , ÏÖÓĞ &a%d &eµãÉùÍû."
-deadChange: "&eÄã±» &r%s&r &eÕ¶É± , Ê§È¥ &c%d &eµãÉùÍû , ÏÖÓĞ &a%d &eµãÉùÍû."
-levelUp: "&e¹§Ï²Äã , ½úÉıµ½ÁË &r%s&r&e."
-levelDown: "&cºÜÒÅº¶ , Äãµô¶Îµ½ÁË &r%s&r&c."
-openWorld: "ÊÀ½ç &e%s&r µÄÉùÍûÏµÍ³ÒÑ &a¿ªÆô&r."
-closeWorld: "ÊÀ½ç &e%s&r µÄÉùÍûÏµÍ³ÒÑ &c¹Ø±Õ&r."
-invalidWorldName: "²ÎÊı²»ÊÇÓĞĞ§ÊÀ½çÃû , »ò¶ÔÓ¦ÊÀ½ç²»´æÔÚ."
-noSuchPlayer: "ÃûÎª %s µÄÍæ¼Ò²»´æÔÚ."
-addScore: "ÒÑÎªÍæ¼Ò &e%s&r Ìí¼Ó &a%d&r µãÉùÍû , µ±Ç°ÉùÍûÎª &a%d&r ."
-setScore: "ÒÑÉèÖÃÍæ¼Ò &e%s&r µÄÉùÍûÎª &a%d&r ."
-playerInfo: "ÎÒµÄÉùÍûĞÅÏ¢: &a%d&r µãÉùÍû , ´¦ÓÚ &e%s&r ¶ÎÎ»."
-rankHead: "============ÉùÍûÅÅĞĞ°ñ============"
+killChange: "&eä½ æ–©æ€äº† &r%s&r&e , è·å¾— &a%d &eç‚¹å£°æœ› , ç°æœ‰ &a%d &eç‚¹å£°æœ›."
+deadChange: "&eä½ è¢« &r%s&r &eæ–©æ€ , å¤±å» &c%d &eç‚¹å£°æœ› , ç°æœ‰ &a%d &eç‚¹å£°æœ›."
+levelUp: "&eæ­å–œä½  , æ™‹å‡åˆ°äº† &r%s&r&e."
+levelDown: "&cå¾ˆé—æ†¾ , ä½ æ‰æ®µåˆ°äº† &r%s&r&c."
+openWorld: "ä¸–ç•Œ &e%s&r çš„å£°æœ›ç³»ç»Ÿå·² &aå¼€å¯&r."
+closeWorld: "ä¸–ç•Œ &e%s&r çš„å£°æœ›ç³»ç»Ÿå·² &cå…³é—­&r."
+invalidWorldName: "å‚æ•°ä¸æ˜¯æœ‰æ•ˆä¸–ç•Œå , æˆ–å¯¹åº”ä¸–ç•Œä¸å­˜åœ¨."
+noSuchPlayer: "åä¸º %s çš„ç©å®¶ä¸å­˜åœ¨."
+addScore: "å·²ä¸ºç©å®¶ &e%s&r æ·»åŠ  &a%d&r ç‚¹å£°æœ› , å½“å‰å£°æœ›ä¸º &a%d&r ."
+setScore: "å·²è®¾ç½®ç©å®¶ &e%s&r çš„å£°æœ›ä¸º &a%d&r ."
+playerInfo: "æˆ‘çš„å£°æœ›ä¿¡æ¯: &a%d&r ç‚¹å£°æœ› , å¤„äº &e%s&r æ®µä½."
+rankHead: "------------å£°æœ›æ’è¡Œæ¦œ------------"
 rankLine: "%2d - %-12.12s %10d %s"
-rankFoot: "=============µÚ %d/%d Ò³============="
+rankFoot: "-------------ç¬¬ %d/%d é¡µ-------------"
