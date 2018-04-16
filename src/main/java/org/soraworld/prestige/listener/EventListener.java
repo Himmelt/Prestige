@@ -9,23 +9,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.world.WorldSaveEvent;
-import org.bukkit.plugin.Plugin;
 import org.soraworld.prestige.config.Config;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.PlayerScore;
 import org.soraworld.prestige.util.MathUtil;
-import org.soraworld.violet.util.ListUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class EventListener implements Listener {
 
     private final Config config;
-    private final Plugin plugin;
 
-    public EventListener(Config config, Plugin plugin) {
+    public EventListener(Config config) {
         this.config = config;
-        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -53,8 +50,8 @@ public class EventListener implements Listener {
             Level killLvl = psKill.getLevel();
             Level deadLvl = psDead.getLevel();
 
-            List<String> variables = ListUtil.arrayList("$KillerScore$", "$DeadScore$", "$KillerGradeScore$", "$DeadGradeScore$");
-            List<Integer> values = ListUtil.arrayList(psKill.getScore(), psDead.getScore(), killLvl.getScore(), deadLvl.getScore());
+            List<String> variables = Arrays.asList("$KillerScore$", "$DeadScore$", "$KillerGradeScore$", "$DeadGradeScore$");
+            List<Integer> values = Arrays.asList(psKill.getScore(), psDead.getScore(), killLvl.getScore(), deadLvl.getScore());
 
             MathUtil pool;
             int killPoint;
@@ -76,8 +73,8 @@ public class EventListener implements Listener {
             psKill.addScore(killPoint);
             psDead.addScore(deadPoint * -1);
 
-            config.iiChat.send(killer, config.iiLang.format("killChange", deadLvl.fullName(deader), killPoint, psKill.getScore()));
-            config.iiChat.send(deader, config.iiLang.format("deadChange", killLvl.fullName(killer), deadPoint, psDead.getScore()));
+            config.send(killer, "killChange", deadLvl.fullName(deader), killPoint, psKill.getScore());
+            config.send(deader, "deadChange", killLvl.fullName(killer), deadPoint, psDead.getScore());
 
             checkLevel(killer, psKill.getLevel(), killLvl);
             checkLevel(deader, psDead.getLevel(), deadLvl);
@@ -101,10 +98,10 @@ public class EventListener implements Listener {
 
     private void checkLevel(Player player, Level now, Level old) {
         if (now.getScore() > old.getScore()) {
-            config.iiChat.send(player, config.iiLang.format("levelUp", now.getName()));
+            config.send(player, "levelUp", now.getName());
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 10.0F, player.getLocation().getPitch());
         } else if (now.getScore() < old.getScore()) {
-            config.iiChat.send(player, config.iiLang.format("levelDown", now.getName()));
+            config.send(player, "levelDown", now.getName());
             player.playSound(player.getLocation(), Sound.ANVIL_USE, 10.0F, player.getLocation().getPitch());
         }
     }

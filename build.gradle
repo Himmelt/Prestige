@@ -1,8 +1,18 @@
+buildscript {
+    ext.kotlin_version = '1.2.30'
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 apply plugin: 'java'
+apply plugin: 'kotlin'
 
 group = 'org.soraworld.prestige'
-version = '1.7.10-1.0.4'
-description = 'Prestige Plugin'
+version = '1.7.10-1.0.5'
 archivesBaseName = "Prestige"
 
 sourceCompatibility = targetCompatibility = '1.7'
@@ -26,5 +36,5 @@ dependencies {
     compile 'org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'me.clip:placeholderapi:2.8.5'
-    compile files('lib/Violet-1.7.10-1.1.6.jar')
+    compile files('lib/Violet-1.7.10-1.2.1.jar')
 }
