@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.PlayerScore;
@@ -19,7 +20,9 @@ import java.util.*;
 public class Config extends IIConfig {
 
     private final File score_file;
+    private final File gifts_file;
     private final IYamlConfiguration score_yaml = new IYamlConfiguration();
+    private final IYamlConfiguration gifts_yaml = new IYamlConfiguration();
 
     public String difficultKill = "2*($DeadScore$-$KillerScore$)";
     public String simpleKill = "$DeadScore$/$KillerGradeScore$+1";
@@ -28,14 +31,18 @@ public class Config extends IIConfig {
     public String simpleDie = "$KillerGradeScore$/100";
     public String easyDie = "($DeadScore$-$KillerScore$)*1.5";
 
+    public int giftCoolDown = 1440;
+
     private final HashSet<World> worlds = new HashSet<>();
     private final TreeSet<Level> levels = new TreeSet<>();
     private final TreeSet<PlayerScore> rank = new TreeSet<>();
     private final HashMap<String, PlayerScore> scores = new HashMap<>();
+    public final HashMap<String, Long> gifts = new HashMap<>();
 
-    public Config(File path) {
-        super(path);
+    public Config(File path, JavaPlugin plugin) {
+        super(path, plugin);
         this.score_file = new File(path, "score.yml");
+        this.gifts_file = new File(path, "gifts.yml");
     }
 
     private void readWorlds(List<String> list) {
@@ -120,7 +127,7 @@ public class Config extends IIConfig {
             score_yaml.set("scores", scores);
             score_yaml.save(score_file);
         } catch (Throwable e) {
-            if (getDebug()) e.printStackTrace();
+            if (debug) e.printStackTrace();
             console("&cScore file save exception !!!");
         }
     }
@@ -143,8 +150,40 @@ public class Config extends IIConfig {
                 }
             }
         } catch (Throwable e) {
-            if (getDebug()) e.printStackTrace();
+            if (debug) e.printStackTrace();
             console("&cScore file load exception !!!");
+        }
+    }
+
+    public void saveGifts() {
+        try {
+            gifts_yaml.clear();
+            gifts_yaml.set("gifts", gifts);
+            gifts_yaml.save(gifts_file);
+        } catch (Throwable e) {
+            if (debug) e.printStackTrace();
+            console("&cGifts file save exception !!!");
+        }
+    }
+
+    public void loadGifts() {
+        if (!gifts_file.exists()) {
+            saveGifts();
+            return;
+        }
+        try {
+            gifts.clear();
+            gifts_yaml.load(gifts_file);
+            Object obj = gifts_yaml.get("gifts");
+            if (obj instanceof MemorySection) {
+                MemorySection sec = (MemorySection) obj;
+                for (String player : sec.getKeys(false)) {
+                    gifts.put(player, sec.getLong(player));
+                }
+            }
+        } catch (Throwable e) {
+            if (debug) e.printStackTrace();
+            console("&cGifts file load exception !!!");
         }
     }
 
@@ -188,7 +227,7 @@ public class Config extends IIConfig {
 
     public Level computeLevel(int score) {
         for (Level level : levels) {
-            if (score < level.getScore()) return level;
+            if (score <= level.getScore()) return level;
         }
         return levels.last();
     }
@@ -220,27 +259,31 @@ public class Config extends IIConfig {
     }
 
     protected void loadOptions() {
-        easyDie = getCfgYaml().getString("easyDieFormula");
-        easyKill = getCfgYaml().getString("easyKillFormula");
-        simpleDie = getCfgYaml().getString("simpleDieFormula");
-        simpleKill = getCfgYaml().getString("simpleKillFormula");
-        difficultDie = getCfgYaml().getString("difficultDieFormula");
-        difficultKill = getCfgYaml().getString("difficultKillFormula");
-        readWorlds(getCfgYaml().getStringList("worlds"));
-        readLevels(getCfgYaml().getList("levels"));
+        easyDie = config_yaml.getString("easyDieFormula");
+        easyKill = config_yaml.getString("easyKillFormula");
+        simpleDie = config_yaml.getString("simpleDieFormula");
+        simpleKill = config_yaml.getString("simpleKillFormula");
+        difficultDie = config_yaml.getString("difficultDieFormula");
+        difficultKill = config_yaml.getString("difficultKillFormula");
+        giftCoolDown = config_yaml.getInt("giftCoolDown", 1440);
+        readWorlds(config_yaml.getStringList("worlds"));
+        readLevels(config_yaml.getList("levels"));
         loadScore();
+        loadGifts();
     }
 
     protected void saveOptions() {
-        getCfgYaml().set("easyDieFormula", easyDie);
-        getCfgYaml().set("easyKillFormula", easyKill);
-        getCfgYaml().set("simpleDieFormula", simpleDie);
-        getCfgYaml().set("simpleKillFormula", simpleKill);
-        getCfgYaml().set("difficultDieFormula", difficultDie);
-        getCfgYaml().set("difficultKillFormula", difficultKill);
-        getCfgYaml().set("worlds", writeWorlds());
-        getCfgYaml().set("levels", writeLevels());
+        config_yaml.set("easyDieFormula", easyDie);
+        config_yaml.set("easyKillFormula", easyKill);
+        config_yaml.set("simpleDieFormula", simpleDie);
+        config_yaml.set("simpleKillFormula", simpleKill);
+        config_yaml.set("difficultDieFormula", difficultDie);
+        config_yaml.set("difficultKillFormula", difficultKill);
+        config_yaml.set("giftCoolDown", giftCoolDown);
+        config_yaml.set("worlds", writeWorlds());
+        config_yaml.set("levels", writeLevels());
         saveScore();
+        saveGifts();
     }
 
     public void afterLoad() {
@@ -248,20 +291,17 @@ public class Config extends IIConfig {
     }
 
     @Nonnull
-    public String getAdminPerm() {
-        return Constant.PERM_ADMIN;
-    }
-
-    @Nonnull
-    public ChatColor getHeadColor() {
+    protected ChatColor defaultChatColor() {
         return ChatColor.GOLD;
     }
 
     @Nonnull
-    public String getPlainHead() {
+    protected String defaultChatHead() {
         return "[" + Constant.PLUGIN_NAME + "] ";
     }
 
-    public void setPlainHead(String s) {
+    public String defaultAdminPerm() {
+        return Constant.PERM_ADMIN;
     }
+
 }

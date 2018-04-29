@@ -12,12 +12,12 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 
 group = 'org.soraworld.prestige'
-version = '1.7.10-1.0.5'
+version = '1.7.10-1.0.7'
 archivesBaseName = "Prestige"
 
-sourceCompatibility = targetCompatibility = '1.7'
+sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
-    sourceCompatibility = targetCompatibility = '1.7'
+    sourceCompatibility = targetCompatibility = '1.8'
 }
 
 repositories {
@@ -36,5 +36,5 @@ dependencies {
     compile 'org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'me.clip:placeholderapi:2.8.5'
-    compile files('lib/Violet-1.7.10-1.2.1.jar')
+    compile files('lib/Violet-1.7.10-1.1.7.jar')
 }

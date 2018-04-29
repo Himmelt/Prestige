@@ -10,6 +10,7 @@ import org.soraworld.prestige.core.PlayerScore;
 import org.soraworld.violet.command.CommandViolet;
 import org.soraworld.violet.command.IICommand;
 import org.soraworld.violet.constant.Violets;
+import org.soraworld.violet.util.ListUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ import java.util.List;
 public class CommandPrestige extends CommandViolet {
 
     public CommandPrestige(String name, String perm, final Config config) {
-        super(name, perm, config);
+        super(name, perm, config, config.plugin);
         addSub(new IICommand("add", Constant.PERM_ADMIN, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.size() == 2) {
                     try {
                         int score = Integer.valueOf(args.get(1));
@@ -38,17 +39,17 @@ public class CommandPrestige extends CommandViolet {
             }
 
             @Nonnull
-            public List<String> tabCompletions(List<String> args) {
+            public List<String> getTabCompletions(ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    return Companion.getMatchPlayers("");
+                    return ListUtil.getMatchPlayers("");
                 } else if (args.size() == 1) {
-                    return Companion.getMatchPlayers(args.get(0));
+                    return ListUtil.getMatchPlayers(args.get(0));
                 }
                 return new ArrayList<>();
             }
         });
         addSub(new IICommand("set", Constant.PERM_ADMIN, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.size() == 2) {
                     try {
                         PlayerScore ps = config.getScore(args.get(0));
@@ -65,17 +66,17 @@ public class CommandPrestige extends CommandViolet {
             }
 
             @Nonnull
-            public List<String> tabCompletions(List<String> args) {
+            public List<String> getTabCompletions(ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    return Companion.getMatchPlayers("");
+                    return ListUtil.getMatchPlayers("");
                 } else if (args.size() == 1) {
-                    return Companion.getMatchPlayers(args.get(0));
+                    return ListUtil.getMatchPlayers(args.get(0));
                 }
                 return new ArrayList<>();
             }
         });
         addSub(new IICommand("info", null, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (sender instanceof Player) {
                     PlayerScore ps = config.getScore(sender.getName());
                     config.send(sender, "playerInfo", ps.getScore(), ps.getLevel().getName());
@@ -86,7 +87,7 @@ public class CommandPrestige extends CommandViolet {
             }
         });
         addSub(new IICommand("top", null, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
                     config.showRank(sender, 1);
                 } else {
@@ -100,7 +101,7 @@ public class CommandPrestige extends CommandViolet {
             }
         });
         addSub(new IICommand("open", Constant.PERM_ADMIN, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
                     if (sender instanceof Player) {
                         World world = ((Player) sender).getWorld();
@@ -122,17 +123,17 @@ public class CommandPrestige extends CommandViolet {
             }
 
             @Nonnull
-            public List<String> tabCompletions(List<String> args) {
+            public List<String> getTabCompletions(ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    return Companion.getMatchWorlds("");
+                    return ListUtil.getMatchWorlds("");
                 } else if (args.size() == 1) {
-                    return Companion.getMatchWorlds(args.get(0));
+                    return ListUtil.getMatchWorlds(args.get(0));
                 }
                 return new ArrayList<>();
             }
         });
         addSub(new IICommand("close", Constant.PERM_ADMIN, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
                     if (sender instanceof Player) {
                         World world = ((Player) sender).getWorld();
@@ -154,17 +155,17 @@ public class CommandPrestige extends CommandViolet {
             }
 
             @Nonnull
-            public List<String> tabCompletions(List<String> args) {
+            public List<String> getTabCompletions(ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    return Companion.getMatchWorlds("");
+                    return ListUtil.getMatchWorlds("");
                 } else if (args.size() == 1) {
-                    return Companion.getMatchWorlds(args.get(0));
+                    return ListUtil.getMatchWorlds(args.get(0));
                 }
                 return new ArrayList<>();
             }
         });
         addSub(new IICommand("exec", Constant.PERM_ADMIN, config) {
-            public boolean execute(CommandSender sender, List<String> args) {
+            public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
                     config.execCommands(null);
                 } else {
@@ -174,13 +175,31 @@ public class CommandPrestige extends CommandViolet {
             }
 
             @Nonnull
-            public List<String> tabCompletions(List<String> args) {
+            public List<String> getTabCompletions(ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    return Companion.getMatchPlayers("");
+                    return ListUtil.getMatchPlayers("");
                 } else if (args.size() == 1) {
-                    return Companion.getMatchPlayers(args.get(0));
+                    return ListUtil.getMatchPlayers(args.get(0));
                 }
                 return new ArrayList<>();
+            }
+        });
+        addSub(new IICommand("gift", null, config, true) {
+
+            public boolean execute(Player player, ArrayList<String> args) {
+                Long last = config.gifts.get(player.getName());
+                if (last == null) {
+                    config.gifts.put(player.getName(), System.currentTimeMillis());
+                    config.execCommands(player.getName());
+                    config.saveGifts();
+                } else if (System.currentTimeMillis() - last > config.giftCoolDown * 60000) {
+                    config.gifts.put(player.getName(), System.currentTimeMillis());
+                    config.execCommands(player.getName());
+                    config.saveGifts();
+                } else {
+                    config.send(player, "You have got your gift!");
+                }
+                return true;
             }
         });
     }
