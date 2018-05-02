@@ -236,23 +236,25 @@ public class Config extends IIConfig {
         return rank;
     }
 
-    public void execCommands(String name) {
-        if (name == null || name.isEmpty()) {
-            for (PlayerScore ps : rank) {
-                Player player = Bukkit.getPlayer(ps.getName());
-                if (player != null) {
-                    Level level = ps.getLevel();
-                    for (String cmd : level.getCommands()) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
-                    }
-                }
-            }
-        } else {
-            Player player = Bukkit.getPlayer(name);
+    public void execCommands() {
+        for (PlayerScore ps : rank) {
+            Player player = Bukkit.getPlayer(ps.getName());
             if (player != null) {
-                Level level = getScore(name).getLevel();
+                Level level = ps.getLevel();
                 for (String cmd : level.getCommands()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player.getName()));
+                }
+            }
+        }
+    }
+
+    public void execCommands(String player) {
+        if (player != null && !player.isEmpty()) {
+            PlayerScore ps = scores.get(player);
+            if (ps != null) {
+                Level level = ps.getLevel();
+                for (String cmd : level.getCommands()) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player));
                 }
             }
         }

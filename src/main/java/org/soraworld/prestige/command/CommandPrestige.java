@@ -167,7 +167,7 @@ public class CommandPrestige extends CommandViolet {
         addSub(new IICommand("exec", Constant.PERM_ADMIN, config) {
             public boolean execute(CommandSender sender, ArrayList<String> args) {
                 if (args.isEmpty()) {
-                    config.execCommands(null);
+                    config.execCommands();
                 } else {
                     config.execCommands(args.get(0));
                 }
