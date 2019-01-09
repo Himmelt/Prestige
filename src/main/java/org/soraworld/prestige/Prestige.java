@@ -2,7 +2,7 @@ package org.soraworld.prestige;
 
 import org.bukkit.event.Listener;
 import org.soraworld.prestige.command.CommandPrestige;
-import org.soraworld.prestige.config.Config;
+import org.soraworld.prestige.manager.FameManager;
 import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.listener.EventListener;
 import org.soraworld.violet.VioletPlugin;
@@ -19,19 +19,19 @@ public class Prestige extends VioletPlugin {
 
     @Nonnull
     protected IIConfig registerConfig(File path) {
-        return new Config(path, this);
+        return new FameManager(path, this);
     }
 
     @Nonnull
     protected List<Listener> registerEvents(IIConfig iiConfig) {
         ArrayList<Listener> listeners = new ArrayList<>();
-        if (config instanceof Config) listeners.add(new EventListener((Config) config));
+        if (config instanceof FameManager) listeners.add(new EventListener((FameManager) config));
         return listeners;
     }
 
     @Nullable
     protected IICommand registerCommand(IIConfig iiConfig) {
-        if (config instanceof Config) return new CommandPrestige(Constant.PLUGIN_ID, null, (Config) config);
+        if (config instanceof FameManager) return new CommandPrestige(Constant.PLUGIN_ID, null, (FameManager) config);
         return null;
     }
 

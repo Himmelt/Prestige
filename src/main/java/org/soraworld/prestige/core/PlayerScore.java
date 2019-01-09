@@ -1,6 +1,6 @@
 package org.soraworld.prestige.core;
 
-import org.soraworld.prestige.config.Config;
+import org.soraworld.prestige.manager.FameManager;
 
 import javax.annotation.Nonnull;
 
@@ -9,9 +9,9 @@ public class PlayerScore implements Comparable<PlayerScore> {
     private int score;
     private Level level;
     private final String player;
-    private final Config config;
+    private final FameManager config;
 
-    public PlayerScore(String player, Config config, int score) {
+    public PlayerScore(String player, FameManager config, int score) {
         this.player = player;
         this.config = config;
         this.score = score < 0 ? 0 : score;

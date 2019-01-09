@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.world.WorldSaveEvent;
-import org.soraworld.prestige.config.Config;
+import org.soraworld.prestige.manager.FameManager;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.PlayerScore;
 import org.soraworld.prestige.util.MathUtil;
@@ -19,9 +19,9 @@ import java.util.List;
 
 public class EventListener implements Listener {
 
-    private final Config config;
+    private final FameManager config;
 
-    public EventListener(Config config) {
+    public EventListener(FameManager config) {
         this.config = config;
     }
 

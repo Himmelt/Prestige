@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.soraworld.prestige.config.Config;
+import org.soraworld.prestige.manager.FameManager;
 import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.PlayerScore;
 import org.soraworld.violet.command.CommandViolet;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class CommandPrestige extends CommandViolet {
 
-    public CommandPrestige(String name, String perm, final Config config) {
+    public CommandPrestige(String name, String perm, final FameManager config) {
         super(name, perm, config, config.plugin);
         addSub(new IICommand("add", Constant.PERM_ADMIN, config) {
             public boolean execute(CommandSender sender, ArrayList<String> args) {

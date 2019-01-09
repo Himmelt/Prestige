@@ -1,4 +1,4 @@
-package org.soraworld.prestige.config;
+package org.soraworld.prestige.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,13 +11,14 @@ import org.soraworld.prestige.constant.Constant;
 import org.soraworld.prestige.core.Level;
 import org.soraworld.prestige.core.PlayerScore;
 import org.soraworld.violet.config.IIConfig;
+import org.soraworld.violet.manager.SpigotManager;
 import org.soraworld.violet.yaml.IYamlConfiguration;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.*;
 
-public class Config extends IIConfig {
+public class FameManager extends SpigotManager {
 
     private final File score_file;
     private final File gifts_file;
@@ -39,7 +40,7 @@ public class Config extends IIConfig {
     private final HashMap<String, PlayerScore> scores = new HashMap<>();
     public final HashMap<String, Long> gifts = new HashMap<>();
 
-    public Config(File path, JavaPlugin plugin) {
+    public FameManager(File path, JavaPlugin plugin) {
         super(path, plugin);
         this.score_file = new File(path, "score.yml");
         this.gifts_file = new File(path, "gifts.yml");
@@ -288,16 +289,18 @@ public class Config extends IIConfig {
         saveGifts();
     }
 
+    public org.soraworld.violet.util.ChatColor defChatColor() {
+        return null;
+    }
+
     public void afterLoad() {
 
     }
 
-    @Nonnull
     protected ChatColor defaultChatColor() {
         return ChatColor.GOLD;
     }
 
-    @Nonnull
     protected String defaultChatHead() {
         return "[" + Constant.PLUGIN_NAME + "] ";
     }
